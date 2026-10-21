@@ -1,0 +1,624 @@
+fileFormatVersion: 2
+guid: 49c7d3ecc6446aa45b0c976d5ab09ca7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5064991648250544556
+    second: cruze_logo_0
+  - first:
+      213: -2921670896027862529
+    second: cruze_logo_1
+  - first:
+      213: -6634484293154759236
+    second: cruze_logo_2
+  - first:
+      213: 5095968480109275643
+    second: cruze_logo_3
+  - first:
+      213: 6847636110371206661
+    second: cruze_logo_4
+  - first:
+      213: 2832131044256585024
+    second: cruze_logo_5
+  - first:
+      213: 2362548634032464997
+    second: cruze_logo_6
+  - first:
+      213: -8008268525216434115
+    second: cruze_logo_7
+  - first:
+      213: 7710397470179797000
+    second: cruze_logo_8
+  - first:
+      213: 8220499607120265695
+    second: cruze_logo_9
+  - first:
+      213: -670809628232086938
+    second: cruze_logo_10
+  - first:
+      213: 4279008000275643200
+    second: cruze_logo_11
+  - first:
+      213: 597214172833099474
+    second: cruze_logo_12
+  - first:
+      213: 264754847633626154
+    second: cruze_logo_13
+  - first:
+      213: -1569980730803683864
+    second: cruze_logo_14
+  - first:
+      213: -3442382135884639778
+    second: cruze_logo_15
+  - first:
+      213: 4589278825822062810
+    second: cruze_logo_16
+  - first:
+      213: 7225309897651793897
+    second: cruze_logo_17
+  - first:
+      213: 5393128320318780403
+    second: cruze_logo_18
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: cruze_logo_0
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 177
+        width: 266
+        height: 357
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45eb4bf6ee885b9b0800000000000000
+      internalID: -5064991648250544556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_1
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 58
+        width: 78
+        height: 87
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff979abbcc32477d0800000000000000
+      internalID: -2921670896027862529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 58
+        width: 72
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbd1a96bfa39de3a0800000000000000
+      internalID: -6634484293154759236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_3
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 58
+        width: 73
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf92083455488b640800000000000000
+      internalID: 5095968480109275643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_4
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 58
+        width: 72
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50630d513c0b70f50800000000000000
+      internalID: 6847636110371206661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_5
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 58
+        width: 64
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0451542fd20cd4720800000000000000
+      internalID: 2832131044256585024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_6
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 9
+        width: 21
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 564e610277579c020800000000000000
+      internalID: 2362548634032464997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_7
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 9
+        width: 23
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d387888b43aecd090800000000000000
+      internalID: -8008268525216434115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_8
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 9
+        width: 24
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 808232fc5a5d00b60800000000000000
+      internalID: 7710397470179797000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_9
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 9
+        width: 26
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd144aea6d4151270800000000000000
+      internalID: 8220499607120265695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_10
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 10
+        width: 8
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66a805d723ec0b6f0800000000000000
+      internalID: -670809628232086938
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_11
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 9
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04bfb77ea17126b30800000000000000
+      internalID: 4279008000275643200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_12
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 9
+        width: 25
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2deab82402bb94800800000000000000
+      internalID: 597214172833099474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_13
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 9
+        width: 21
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a24d3c591299ca300800000000000000
+      internalID: 264754847633626154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_14
+      rect:
+        serializedVersion: 2
+        x: 258
+        y: 9
+        width: 17
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8edfc3ce7de463ae0800000000000000
+      internalID: -1569980730803683864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_15
+      rect:
+        serializedVersion: 2
+        x: 278
+        y: 9
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed112799fa33a30d0800000000000000
+      internalID: -3442382135884639778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_16
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 9
+        width: 25
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad8885ce6c460bf30800000000000000
+      internalID: 4589278825822062810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_17
+      rect:
+        serializedVersion: 2
+        x: 335
+        y: 9
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ef26a11215754460800000000000000
+      internalID: 7225309897651793897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cruze_logo_18
+      rect:
+        serializedVersion: 2
+        x: 364
+        y: 9
+        width: 21
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f333b022ad38da40800000000000000
+      internalID: 5393128320318780403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      cruze_logo_0: -5064991648250544556
+      cruze_logo_1: -2921670896027862529
+      cruze_logo_10: -670809628232086938
+      cruze_logo_11: 4279008000275643200
+      cruze_logo_12: 597214172833099474
+      cruze_logo_13: 264754847633626154
+      cruze_logo_14: -1569980730803683864
+      cruze_logo_15: -3442382135884639778
+      cruze_logo_16: 4589278825822062810
+      cruze_logo_17: 7225309897651793897
+      cruze_logo_18: 5393128320318780403
+      cruze_logo_2: -6634484293154759236
+      cruze_logo_3: 5095968480109275643
+      cruze_logo_4: 6847636110371206661
+      cruze_logo_5: 2832131044256585024
+      cruze_logo_6: 2362548634032464997
+      cruze_logo_7: -8008268525216434115
+      cruze_logo_8: 7710397470179797000
+      cruze_logo_9: 8220499607120265695
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
