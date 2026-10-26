@@ -1,79 +1,140 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 
 namespace WordDrop.Gameplay
 {
     /// <summary>
-    /// The valid words. Tiles carry plain letters, so words are matched without
-    /// accents ("MAE" matches "MÃE"), but the accented form is kept for display.
+    /// The valid words. Following the GDD (1.3, 8.6), words are normalized to
+    /// Unicode NFC and upper case, and accents and Ç are kept: "AVÓ" and "AVO"
+    /// are different words, and a tile "Ã" is not an "A".
+    /// The word file may declare metadata in lines starting with "#!", e.g.
+    /// "#! versao: 1.0.0", and each word may have a short explanation after a
+    /// bar: "MÃE | Mulher em relação aos seus filhos." (GDD 7.1, item 13).
     /// </summary>
     public class WordDictionary
     {
         public const int MinLength = 3;
 
-        private readonly Dictionary<string, string> displayByKey = new Dictionary<string, string>();
-        private readonly Dictionary<int, List<string>> keysByLength = new Dictionary<int, List<string>>();
+        private readonly HashSet<string> words = new HashSet<string>();
+        private readonly Dictionary<string, string> definitions = new Dictionary<string, string>();
+        private readonly Dictionary<int, List<string>> wordsByLength = new Dictionary<int, List<string>>();
 
-        public WordDictionary(IEnumerable<string> words)
+        public WordDictionary(IEnumerable<string> lines)
         {
-            foreach (string raw in words)
+            foreach (string raw in lines)
             {
-                string display = raw.Trim().ToUpperInvariant();
-                if (display.Length == 0 || display.StartsWith("#"))
+                string line = raw.Trim();
+                if (line.StartsWith("#!"))
+                {
+                    ReadMetadata(line.Substring(2));
+                    continue;
+                }
+
+                if (line.Length == 0 || line.StartsWith("#"))
                 {
                     continue;
                 }
 
-                string key = Normalize(display);
-                if (key.Length < MinLength || displayByKey.ContainsKey(key))
+                string definition = null;
+                int bar = line.IndexOf('|');
+                if (bar >= 0)
+                {
+                    definition = line.Substring(bar + 1).Trim();
+                    line = line.Substring(0, bar);
+                }
+
+                string word = Normalize(line);
+                if (word.Length < MinLength || !words.Add(word))
                 {
                     continue;
                 }
 
-                displayByKey.Add(key, display);
-                if (!keysByLength.TryGetValue(key.Length, out List<string> list))
+                if (!string.IsNullOrEmpty(definition))
                 {
-                    keysByLength[key.Length] = list = new List<string>();
+                    definitions[word] = definition;
                 }
 
-                list.Add(key);
-                MaxLength = Math.Max(MaxLength, key.Length);
+                if (!wordsByLength.TryGetValue(word.Length, out List<string> list))
+                {
+                    wordsByLength[word.Length] = list = new List<string>();
+                }
+
+                list.Add(word);
+                MaxLength = Math.Max(MaxLength, word.Length);
             }
         }
 
-        public int Count => displayByKey.Count;
+        public int Count => words.Count;
         public int MaxLength { get; private set; }
+
+        /// <summary>Content version from the file's "#! versao:" line, saved with player data.</summary>
+        public string Version { get; private set; } = "desconhecida";
 
         public static WordDictionary FromText(string text) =>
             new WordDictionary(text.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries));
 
-        public bool Contains(string key) => displayByKey.ContainsKey(key);
+        public bool Contains(string word) => words.Contains(word);
 
-        /// <summary>The accented form of a matched word, e.g. "MAE" → "MÃE".</summary>
-        public string Display(string key) => displayByKey.TryGetValue(key, out string display) ? display : key;
+        /// <summary>The word's short explanation, or null when the list has none.</summary>
+        public string Definition(string word) => definitions.TryGetValue(word, out string text) ? text : null;
 
-        /// <summary>A random word of the given length (plain letters), or null if there is none.</summary>
-        public string RandomWord(int length, Random random)
+        /// <summary>
+        /// The first word (in list order) matching a pattern where
+        /// <paramref name="wildcard"/> stands for any letter, or null.
+        /// </summary>
+        public string Match(string pattern, char wildcard)
         {
-            return keysByLength.TryGetValue(length, out List<string> list) ? list[random.Next(list.Count)] : null;
-        }
-
-        /// <summary>Upper case, with accents and the cedilla removed: "Maçã" → "MACA".</summary>
-        public static string Normalize(string word)
-        {
-            string decomposed = word.ToUpperInvariant().Normalize(NormalizationForm.FormD);
-            var builder = new StringBuilder(decomposed.Length);
-            foreach (char c in decomposed)
+            if (pattern.IndexOf(wildcard) < 0)
             {
-                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                return Contains(pattern) ? pattern : null;
+            }
+
+            if (!wordsByLength.TryGetValue(pattern.Length, out List<string> list))
+            {
+                return null;
+            }
+
+            foreach (string word in list)
+            {
+                bool matches = true;
+                for (int i = 0; i < pattern.Length && matches; i++)
                 {
-                    builder.Append(c);
+                    matches = pattern[i] == wildcard || pattern[i] == word[i];
+                }
+
+                if (matches)
+                {
+                    return word;
                 }
             }
 
-            return builder.ToString();
+            return null;
+        }
+
+        /// <summary>A random word of the given length, or null if there is none.</summary>
+        public string RandomWord(int length, Random random)
+        {
+            return wordsByLength.TryGetValue(length, out List<string> list) ? list[random.Next(list.Count)] : null;
+        }
+
+        /// <summary>NFC + upper case, keeping accents: "maçã" → "MAÇÃ".</summary>
+        public static string Normalize(string word) =>
+            word.Trim().Normalize(NormalizationForm.FormC).ToUpperInvariant().Normalize(NormalizationForm.FormC);
+
+        private void ReadMetadata(string line)
+        {
+            int colon = line.IndexOf(':');
+            if (colon < 0)
+            {
+                return;
+            }
+
+            string key = line.Substring(0, colon).Trim().ToLowerInvariant();
+            if (key == "versao" || key == "versão" || key == "version")
+            {
+                Version = line.Substring(colon + 1).Trim();
+            }
         }
     }
 }

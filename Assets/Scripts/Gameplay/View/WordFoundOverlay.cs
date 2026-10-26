@@ -11,6 +11,7 @@ namespace WordDrop.Gameplay.View
         [SerializeField] private TMP_Text titleLabel;
         [SerializeField] private TMP_Text wordsLabel;
         [SerializeField] private TMP_Text pointsLabel;
+        [SerializeField] private TMP_Text definitionLabel;
 
         private float targetAlpha;
 
@@ -20,8 +21,10 @@ namespace WordDrop.Gameplay.View
             group.blocksRaycasts = false;
         }
 
-        public void Show(string title, string body, int points)
+        /// <param name="definition">Meaning of the word, shown in small text; null for none.</param>
+        public void Show(string title, string body, int points, string definition = null)
         {
+            definitionLabel.text = definition ?? "";
             titleLabel.text = title;
             wordsLabel.text = body;
             pointsLabel.text = "+" + Strings.FormatNumber(points);

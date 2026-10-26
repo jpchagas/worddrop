@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1f658895fc152b8bb9fc501095b6e12, type: 3}
+  m_Name: Level09
+  m_EditorClassIdentifier: WordDrop::WordDrop.Gameplay.LevelDefinition
+  levelNumber: 9
+  difficulty: 2
+  endless: 0
+  tip: "As pe\xE7as caem mais r\xE1pido agora. Use a sombra para mirar!"
+  objectives:
+  - type: 0
+    target: 2500
+  moveLimit: 0
+  starScores: c4090000b80b0000ac0d0000
+  boardWidth: 10
+  boardHeight: 20
+  prefillRows: []
+  gravity: 0
+  fallInterval: 0.5
+  wordPieceChance: 0.6
+  pieceSequence: []
+  speedUpEveryPieces: 10
+  speedUpFactor: 0.9
+  minFallInterval: 0.12
+  garbageEveryPieces: 15
+  garbageStartPiece: 30

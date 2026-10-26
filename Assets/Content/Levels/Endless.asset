@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1f658895fc152b8bb9fc501095b6e12, type: 3}
+  m_Name: Endless
+  m_EditorClassIdentifier: WordDrop::WordDrop.Gameplay.LevelDefinition
+  levelNumber: 0
+  difficulty: 0
+  endless: 1
+  tip: "Fa\xE7a o m\xE1ximo de pontos. As pe\xE7as aceleram e, de tempos em tempos,
+    uma linha de letras sobe do fundo!"
+  objectives: []
+  moveLimit: 0
+  starScores: 
+  boardWidth: 10
+  boardHeight: 20
+  prefillRows: []
+  gravity: 0
+  fallInterval: 0.8
+  wordPieceChance: 0.5
+  pieceSequence: []
+  speedUpEveryPieces: 10
+  speedUpFactor: 0.9
+  minFallInterval: 0.12
+  garbageEveryPieces: 15
+  garbageStartPiece: 30

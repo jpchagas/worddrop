@@ -6,14 +6,14 @@ namespace WordDrop.Gameplay
 {
     public class FoundWord
     {
-        public FoundWord(string key, List<Vector2Int> cells)
+        public FoundWord(string word, List<Vector2Int> cells)
         {
-            Key = key;
+            Word = word;
             Cells = cells;
         }
 
-        /// <summary>The word in plain letters, as on the tiles.</summary>
-        public string Key { get; }
+        /// <summary>The dictionary word (NFC, upper case, with accents); a wildcard tile shows as the letter it stood for.</summary>
+        public string Word { get; }
         public List<Vector2Int> Cells { get; }
     }
 
@@ -97,8 +97,9 @@ namespace WordDrop.Gameplay
                         continue;
                     }
 
-                    string candidate = text.Substring(start, length);
-                    if (!dictionary.Contains(candidate))
+                    // A Star booster tile (wildcard) stands for any letter.
+                    string word = dictionary.Match(text.Substring(start, length), Piece.Wildcard);
+                    if (word == null)
                     {
                         continue;
                     }
@@ -108,7 +109,7 @@ namespace WordDrop.Gameplay
                         used[i] = true;
                     }
 
-                    found.Add(new FoundWord(candidate, run.GetRange(start, length)));
+                    found.Add(new FoundWord(word, run.GetRange(start, length)));
                 }
             }
         }

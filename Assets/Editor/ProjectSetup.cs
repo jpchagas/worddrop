@@ -25,6 +25,7 @@ namespace WordDrop.EditorTools
         {
             ConfigurePlayerSettings();
             ConfigureImports();
+            LevelCatalog.CreateMissing();
             SceneBuilder.BuildAllScenes();
             ConfigureBuildScenes();
             AssetDatabase.SaveAssets();

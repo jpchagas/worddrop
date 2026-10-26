@@ -34,10 +34,13 @@ namespace WordDrop.EditorTools
             CaptureWithPanel("LegalPanel", "Consent_Legal", panel =>
                 panel.GetComponent<UI.LegalTextPanel>().ShowTermsOfUse());
 
-            EditorSceneManager.OpenScene(SceneBuilder.ScenePath(SceneNames.MainMenu));
-            CaptureWithPanel("SettingsPanel", "MainMenu_Settings", null);
+            foreach (string panel in new[] { "SettingsPanel", "HowToPlayPanel", "DailyPanel", "AchievementsPanel", "LeaderboardPanel" })
+            {
+                EditorSceneManager.OpenScene(SceneBuilder.ScenePath(SceneNames.MainMenu));
+                CaptureWithPanel(panel, "MainMenu_" + panel, null);
+            }
 
-            foreach (string panel in new[] { "PausePanel", "LevelCompletePanel", "GameOverPanel" })
+            foreach (string panel in new[] { "BriefingPanel", "PausePanel", "ConfirmDialog", "LevelCompletePanel", "GameOverPanel", "GlossaryPanel" })
             {
                 EditorSceneManager.OpenScene(SceneBuilder.ScenePath(SceneNames.Game));
                 CaptureWithPanel(panel, "Game_" + panel, null);

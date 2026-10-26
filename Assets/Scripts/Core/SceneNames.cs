@@ -10,8 +10,9 @@ namespace WordDrop.Core
         public const string Consent = "Consent";
         public const string Loading = "Loading";
         public const string MainMenu = "MainMenu";
+        public const string LevelMap = "LevelMap";
         public const string Game = "Game";
 
-        public static readonly string[] All = { Splash, Consent, Loading, MainMenu, Game };
+        public static readonly string[] All = { Splash, Consent, Loading, MainMenu, LevelMap, Game };
     }
 }

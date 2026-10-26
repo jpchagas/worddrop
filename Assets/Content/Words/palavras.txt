@@ -1,463 +1,477 @@
+#! versao: 1.2.0
 # Lista de palavras válidas do Word Drop (pt-BR), uma por linha.
-# Escreva com acentos: eles são mostrados ao jogador, mas ignorados nas peças
-# (MÃE vale para M-A-E). Linhas que começam com # são ignoradas.
-# Mínimo de 3 letras. Na horizontal cabem até 10 (a largura do tabuleiro).
+#
+# Fonte: lista própria, curada manualmente pela Cruze Studio de Jogos para o
+#        Word Drop (sem fonte externa).
+# Licença: conteúdo próprio da Cruze; todos os direitos reservados.
+# Versão: a linha "#! versao" acima. Aumente-a a cada mudança na lista; ela é
+#         salva com o progresso do jogador para resultados reproduzíveis.
+#
+# Regras da lista (GDD 1.3 e 8.6):
+# - Palavras em maiúsculas, com acentos e Ç (AVÓ e AVO são palavras diferentes).
+# - Aceitas: substantivos e adjetivos no singular, pronomes, advérbios,
+#   numerais e verbos no infinitivo.
+# - Não aceitas: conjugações verbais, plurais, abreviações, siglas e nomes próprios.
+# - Mínimo de 3 letras. Na horizontal cabem até 10 (a largura do tabuleiro).
+# - Palavras adequadas para todas as idades.
+# - Cada palavra pode ter uma explicação curta depois de "|" (mostrada ao jogador).
+# Linhas que começam com # são comentários.
 
 # 3 letras
-ALA
-AMA
-ANO
-ASA
-ATO
-AVE
-AVÓ
-BAR
-BAÚ
-BEM
-BOA
-BOI
-BOM
-CAL
-CÃO
-CÉU
-CHÁ
-COR
-CRU
-DAR
-DEZ
-DIA
-DOM
-DOR
-ELA
-ELE
-ERA
-FIM
-FIO
-GÁS
-GEL
-GOL
-ÍMÃ
-LAR
-LEI
-LER
-LUA
-LUZ
-MÃE
-MAL
-MÃO
-MAR
-MAU
-MEL
-MÊS
-MEU
-MIL
-NÃO
-NÓS
-NOZ
-OCA
-OVO
-PAI
-PÃO
-PAR
-PAZ
-PIA
-REI
-RIO
-RIR
-RUA
-SAL
-SER
-SIM
-SOL
-SOM
-SUA
-SUL
-TAL
-TER
-TEU
-TIA
-TIO
-TOM
-TUA
-UMA
-UVA
-VER
-VIA
-VOZ
+ALA | Parte lateral de um prédio, de um time ou de um grupo.
+AMA | Mulher que cuida de crianças de outra família.
+ANO | Período de doze meses, ou 365 dias.
+ASA | Parte do corpo das aves que serve para voar.
+ATO | Aquilo que se faz; uma ação.
+AVE | Animal com penas, bico e asas, como o pássaro.
+AVÓ | Mãe do pai ou da mãe de alguém.
+BAR | Lugar onde se vendem bebidas e lanches.
+BAÚ | Caixa grande com tampa para guardar coisas.
+BEM | Aquilo que é bom; também quer dizer 'de modo correto'.
+BOA | Que é bondosa ou de boa qualidade.
+BOI | Macho do gado, usado no campo para puxar carroças.
+BOM | Que tem qualidade, que agrada ou que faz o bem.
+CAL | Pó branco usado para pintar paredes e em construções.
+CÃO | O mesmo que cachorro.
+CÉU | O espaço acima de nós, onde vemos o sol, a lua e as nuvens.
+CHÁ | Bebida feita com folhas ou ervas em água quente.
+COR | O que os olhos percebem como azul, vermelho, verde...
+CRU | Que não foi cozido.
+DAR | Entregar algo a alguém.
+DEZ | O número 10.
+DIA | Tempo em que há luz do sol; também um período de 24 horas.
+DOM | Talento natural para fazer algo.
+DOR | Sensação ruim no corpo quando algo machuca.
+ELA | Palavra usada para falar de uma mulher ou coisa feminina.
+ELE | Palavra usada para falar de um homem ou coisa masculina.
+ERA | Longo período da história.
+FIM | O final de alguma coisa.
+FIO | Linha fina e comprida, como a de costura ou a elétrica.
+GÁS | Substância como o ar, sem forma fixa; também o gás de cozinha.
+GEL | Substância pastosa e transparente, como a de cabelo.
+GOL | Ponto marcado quando a bola entra na meta, no futebol.
+ÍMÃ | Objeto que atrai o ferro.
+LAR | A casa onde a família vive.
+LEI | Regra que todos devem seguir.
+LER | Entender o que está escrito.
+LUA | Astro que gira em volta da Terra e brilha à noite.
+LUZ | O que ilumina e nos permite enxergar.
+MÃE | Mulher em relação aos seus filhos.
+MAL | O contrário do bem; também quer dizer 'de modo errado'.
+MÃO | Parte do corpo no fim do braço, com cinco dedos.
+MAR | Grande extensão de água salgada.
+MAU | Que não é bom; malvado.
+MEL | Alimento doce feito pelas abelhas.
+MÊS | Cada uma das doze partes do ano.
+MEU | Que pertence a mim.
+MIL | O número 1.000.
+NÃO | Palavra usada para negar ou recusar.
+NÓS | Eu e outras pessoas juntas.
+NOZ | Fruto seco de casca dura, comestível.
+OCA | Casa indígena feita de madeira e palha.
+OVO | O que a galinha e outras aves botam; dele nascem filhotes.
+PAI | Homem em relação aos seus filhos.
+PÃO | Alimento feito de farinha, água e fermento, assado no forno.
+PAR | Conjunto de duas coisas ou pessoas.
+PAZ | Tranquilidade; ausência de guerra ou briga.
+PIA | Bacia com torneira para lavar louça ou as mãos.
+REI | Homem que governa um reino.
+RIO | Curso de água doce que corre até o mar ou outro rio.
+RIR | Mostrar alegria com o rosto e a voz; dar risada.
+RUA | Caminho com casas nas cidades, por onde passam pessoas e carros.
+SAL | Tempero branco e salgado usado na comida.
+SER | Existir; também é qualquer coisa viva.
+SIM | Palavra usada para concordar ou aceitar.
+SOL | A estrela que ilumina e aquece a Terra.
+SOM | Aquilo que ouvimos.
+SUA | Que pertence a você ou a ele(a).
+SUL | Direção oposta ao norte.
+TAL | Igual a esse; semelhante.
+TER | Possuir alguma coisa.
+TEU | Que pertence a ti.
+TIA | Irmã do pai ou da mãe.
+TIO | Irmão do pai ou da mãe.
+TOM | A altura ou o jeito de um som ou de uma voz; também um tipo de cor.
+TUA | Que pertence a ti.
+UMA | Uma só; o número 1 no feminino.
+UVA | Frutinha redonda que nasce em cachos.
+VER | Perceber com os olhos; enxergar.
+VIA | Caminho ou estrada.
+VOZ | Som que sai da boca quando falamos ou cantamos.
 
 # 4 letras
-ÁGUA
-ALMA
-ALTO
-AMOR
-ANÃO
-ANEL
-ANJO
-ARCO
-ARTE
-AULA
-AZUL
-BALA
-BEBÊ
-BICO
-BIFE
-BOCA
-BOLA
-BOLO
-BOTA
-BULE
-CAFÉ
-CAJU
-CAMA
-CANO
-CAPA
-CASA
-CEDO
-CERA
-CHÃO
-COCO
-COLA
-COPO
-CUBO
-DADO
-DAMA
-DEDO
-DOCE
-DUNA
-FACA
-FACE
-FADA
-FAMA
-FERA
-FITA
-FLOR
-FOCA
-FOGO
-FOME
-FRIO
-GALO
-GATO
-GELO
-GOTA
-HOJE
-HORA
-ILHA
-JOGO
-JUBA
-LAGO
-LAMA
-LATA
-LEÃO
-LEME
-LEVE
-LIMA
-LIXO
-LOBO
-LOJA
-LUVA
-MAÇÃ
-MAGO
-MALA
-MAPA
-MATO
-MEDO
-MEIA
-MESA
-MITO
-MOLA
-MOTO
-MURO
-NAVE
-NETO
-NEVE
-NOME
-NOTA
-NOVO
-OBRA
-ÓLEO
-OLHO
-ONÇA
-ONDA
-OURO
-PAÍS
-PANO
-PATA
-PATO
-PEÇA
-PELE
-PENA
-PERA
-PIÃO
-PIPA
-PISO
-POÇO
-POTE
-POVO
-PUMA
-RAIO
-RAIZ
-RAMO
-RATO
-REDE
-REMO
-RIMA
-RISO
-RODA
-ROSA
-SACO
-SAIA
-SALA
-SAPO
-SEDA
-SEDE
-SELO
-SETE
-SINO
-SOFÁ
-SOLO
-SONO
-SOPA
-SUCO
-TAÇA
-TATU
-TELA
-TETO
-TOCA
-TREM
-TRÊS
-TUBO
-UNHA
-URSO
-VACA
-VALE
-VASO
-VELA
-VIDA
-VILA
-VOVÓ
-ZERO
+ÁGUA | Líquido sem cor e sem cheiro que bebemos e que forma rios e mares.
+ALMA | A parte interior de uma pessoa: sentimentos e pensamentos.
+ALTO | Que tem grande altura.
+AMOR | Sentimento forte de carinho por alguém ou algo.
+ANÃO | Pessoa ou personagem de altura bem menor que a comum.
+ANEL | Joia em forma de aro que se usa no dedo.
+ANJO | Ser celestial com asas, mensageiro de Deus em muitas crenças.
+ARCO | Curva; também a arma que lança flechas.
+ARTE | Criação humana como pintura, música, dança e teatro.
+AULA | Momento em que o professor ensina os alunos.
+AZUL | A cor do céu em um dia sem nuvens.
+BALA | Doce pequeno de chupar.
+BEBÊ | Criança bem pequena, recém-nascida.
+BICO | A boca dura das aves.
+BIFE | Fatia de carne preparada para comer.
+BOCA | Parte do rosto por onde comemos e falamos.
+BOLA | Objeto redondo usado em muitos jogos e esportes.
+BOLO | Doce assado feito com farinha, ovos e açúcar.
+BOTA | Calçado que cobre o pé e parte da perna.
+BULE | Recipiente com bico para servir chá ou café.
+CAFÉ | Bebida escura feita de grãos torrados; também a primeira refeição.
+CAJU | Fruta tropical com uma castanha presa embaixo.
+CAMA | Móvel onde deitamos para dormir.
+CANO | Tubo por onde passa água ou gás.
+CAPA | Roupa larga usada por cima; também a cobertura de um livro.
+CASA | Construção onde as pessoas moram.
+CEDO | Antes da hora; de manhã bem no começo do dia.
+CERA | Substância mole feita pelas abelhas, usada em velas.
+CHÃO | A superfície onde pisamos.
+COCO | Fruto do coqueiro, com água e polpa branca dentro.
+COLA | Substância usada para grudar coisas.
+COPO | Recipiente usado para beber.
+CUBO | Figura com seis lados quadrados iguais, como um dado.
+DADO | Cubo com números de 1 a 6 usado em jogos.
+DAMA | Mulher elegante; também uma peça de jogos.
+DEDO | Cada uma das cinco partes no fim da mão ou do pé.
+DOCE | Que tem gosto de açúcar; também uma sobremesa.
+DUNA | Monte de areia formado pelo vento.
+FACA | Talher com lâmina, usado para cortar.
+FACE | O rosto; também cada lado de uma figura.
+FADA | Ser mágico das histórias, geralmente com asas e varinha.
+FAMA | Quando muita gente conhece alguém.
+FERA | Animal selvagem e perigoso.
+FITA | Tira estreita de pano ou plástico.
+FLOR | Parte colorida das plantas que vira fruto ou semente.
+FOCA | Animal marinho que nada muito bem e vive no frio.
+FOGO | Chama que produz luz e calor.
+FOME | Vontade de comer.
+FRIO | Temperatura baixa; o contrário de quente.
+GALO | Macho da galinha, que canta de manhã.
+GATO | Animal de estimação que mia e tem bigodes.
+GELO | Água congelada.
+GOTA | Pinguinho de líquido.
+HOJE | Neste dia.
+HORA | Período de 60 minutos.
+ILHA | Porção de terra cercada de água por todos os lados.
+JOGO | Brincadeira ou esporte com regras.
+JUBA | Os pelos longos em volta da cabeça do leão.
+LAGO | Grande quantidade de água cercada de terra.
+LAMA | Terra misturada com água; barro.
+LATA | Recipiente de metal.
+LEÃO | Felino grande de juba, chamado de rei dos animais.
+LEME | Peça que dá a direção a um barco ou avião.
+LEVE | Que pesa pouco.
+LIMA | Fruta cítrica parecida com o limão; também ferramenta de lixar.
+LIXO | Aquilo que se joga fora.
+LOBO | Animal selvagem parecido com um cachorro grande, que uiva.
+LOJA | Lugar onde se vendem produtos.
+LUVA | Peça de roupa que cobre a mão.
+MAÇÃ | Fruta redonda vermelha ou verde, crocante.
+MAGO | Pessoa que faz mágicas.
+MALA | Bolsa grande para levar roupas em viagens.
+MAPA | Desenho que mostra lugares, ruas ou países.
+MATO | Plantas que crescem sozinhas; também uma área com muitas árvores.
+MEDO | Sentimento de quem se assusta ou se sente em perigo.
+MEIA | Peça de roupa que cobre o pé; também a metade.
+MESA | Móvel com tampo onde comemos, escrevemos ou trabalhamos.
+MITO | História antiga que explica coisas do mundo com deuses e heróis.
+MOLA | Peça de metal em espiral que volta à forma depois de apertada.
+MOTO | Veículo de duas rodas com motor.
+MURO | Parede que cerca um terreno.
+NAVE | Veículo que viaja pelo espaço; também um navio.
+NETO | Filho do filho ou da filha de alguém.
+NEVE | Flocos de gelo que caem do céu quando faz muito frio.
+NOME | Palavra que identifica uma pessoa, um animal ou uma coisa.
+NOTA | Pontuação de uma prova; também um som musical ou um bilhete.
+NOVO | Que tem pouco tempo de uso ou de vida.
+OBRA | Trabalho feito; também uma construção.
+ÓLEO | Líquido gorduroso usado para cozinhar ou em máquinas.
+OLHO | Parte do corpo com que enxergamos.
+ONÇA | Grande felino das matas brasileiras, com pelo pintado.
+ONDA | Movimento da água do mar que sobe e desce.
+OURO | Metal amarelo e muito valioso.
+PAÍS | Território com governo próprio, como o Brasil.
+PANO | Pedaço de tecido.
+PATA | Pé de um animal; também a fêmea do pato.
+PATO | Ave que nada e faz 'quá-quá'.
+PEÇA | Parte de um conjunto; também uma apresentação de teatro.
+PELE | Camada que cobre o corpo.
+PENA | Cada uma das partes que cobrem o corpo das aves.
+PERA | Fruta doce, mais larga embaixo.
+PIÃO | Brinquedo que gira apoiado em uma ponta.
+PIPA | Brinquedo de papel e varetas que voa preso a uma linha.
+PISO | O chão; também cada andar de um prédio.
+POÇO | Buraco fundo cavado para tirar água da terra.
+POTE | Recipiente com tampa para guardar alimentos.
+POVO | Conjunto das pessoas de um lugar.
+PUMA | Felino grande das Américas, também chamado de onça-parda.
+RAIO | Faísca de luz no céu durante tempestades; também uma linha de luz.
+RAIZ | Parte da planta que fica embaixo da terra.
+RAMO | Galho de planta.
+RATO | Pequeno roedor de cauda longa.
+REDE | Tecido trançado usado para pescar ou para deitar e balançar.
+REMO | Haste com ponta larga usada para mover um barco.
+RIMA | Repetição do som no fim de palavras, como em poemas.
+RISO | O ato de rir; risada.
+RODA | Peça redonda que gira e faz veículos andarem.
+ROSA | Flor perfumada; também uma cor clara entre vermelho e branco.
+SACO | Embalagem de papel, plástico ou pano.
+SAIA | Roupa feminina que cobre da cintura para baixo.
+SALA | Cômodo da casa onde a família se reúne; também uma sala de aula.
+SAPO | Animal anfíbio que pula e coaxa.
+SEDA | Tecido fino e brilhante feito com fios do bicho-da-seda.
+SEDE | Vontade de beber água.
+SELO | Pequena estampa colada em cartas para enviá-las.
+SETE | O número 7.
+SINO | Objeto de metal que toca quando balança.
+SOFÁ | Assento estofado para várias pessoas.
+SOLO | A terra onde pisamos e onde crescem as plantas.
+SONO | Vontade de dormir; também o próprio ato de dormir.
+SOPA | Alimento líquido e quente, feito com legumes ou carnes.
+SUCO | Bebida feita de frutas espremidas.
+TAÇA | Copo com pé; também um troféu.
+TATU | Animal com casca dura que cava buracos.
+TELA | Superfície onde aparecem imagens, como a da TV; também um quadro.
+TETO | Parte de cima de um cômodo.
+TOCA | Buraco onde um animal mora.
+TREM | Veículo comprido que anda sobre trilhos.
+TRÊS | O número 3.
+TUBO | Cano; objeto comprido e oco.
+UNHA | Parte dura na ponta dos dedos.
+URSO | Animal grande e peludo que vive em florestas e no gelo.
+VACA | Fêmea do boi, que dá leite.
+VALE | Terreno baixo entre montanhas.
+VASO | Recipiente para plantas ou flores.
+VELA | Bastão de cera com pavio que se acende para iluminar.
+VIDA | Tempo em que um ser existe; o que diferencia os seres vivos.
+VILA | Povoado pequeno.
+VOVÓ | Forma carinhosa de chamar a avó.
+ZERO | O número 0; nada.
 
 # 5 letras
-ABRIL
-AMIGO
-AREIA
-BANCO
-BARCO
-BRAÇO
-CAMPO
-CANTO
-CARTA
-CHAVE
-CHUVA
-CINCO
-CLIMA
-CORDA
-CORPO
-DENTE
-FERRO
-FESTA
-FILHO
-FOLHA
-FORNO
-FRUTA
-FUNDO
-GARFO
-GENTE
-GRAMA
-IDEIA
-JULHO
-JUNHO
-LÁPIS
-LEITE
-LETRA
-LIMÃO
-LINHA
-LIVRO
-LUGAR
-MAGIA
-MANGA
-MOEDA
-MONTE
-MUNDO
-NARIZ
-NINHO
-NOITE
-NUVEM
-PALCO
-PAPEL
-PEDRA
-PEIXE
-PIANO
-PONTE
-PORTA
-PRAIA
-PRATO
-PRETO
-RÁDIO
-REINO
-ROCHA
-ROUPA
-SABÃO
-SINAL
-TARDE
-TERRA
-TIGRE
-TINTA
-TORRE
-TOURO
-TREVO
-TRIGO
-VENTO
-VERDE
-VINHO
-ZEBRA
+ABRIL | O quarto mês do ano.
+AMIGO | Pessoa de quem gostamos e em quem confiamos.
+AREIA | Grãozinhos de pedra que formam praias e desertos.
+BANCO | Assento comprido; também lugar onde se guarda dinheiro.
+BARCO | Veículo que flutua e navega na água.
+BRAÇO | Parte do corpo entre o ombro e a mão.
+CAMPO | Terreno fora da cidade, com plantações ou pastos; também onde se joga bola.
+CANTO | Lugar onde duas paredes se encontram; também o ato de cantar.
+CARTA | Mensagem escrita enviada a alguém; também uma carta de baralho.
+CHAVE | Objeto de metal que abre e fecha fechaduras.
+CHUVA | Água que cai das nuvens.
+CINCO | O número 5.
+CLIMA | Como costuma ser o tempo em um lugar: quente, frio, chuvoso...
+CORDA | Fios grossos trançados, usados para amarrar ou pular.
+CORPO | Tudo o que forma uma pessoa ou um animal, da cabeça aos pés.
+DENTE | Cada uma das partes duras da boca que servem para mastigar.
+FERRO | Metal duro e resistente; também o aparelho de passar roupa.
+FESTA | Reunião alegre para comemorar algo.
+FILHO | Pessoa em relação ao seu pai e à sua mãe.
+FOLHA | Parte verde das plantas; também um pedaço de papel.
+FORNO | Lugar fechado e quente onde se assam alimentos.
+FRUTA | Parte doce e comestível de algumas plantas, como a maçã.
+FUNDO | A parte mais baixa ou mais distante de algo.
+GARFO | Talher com dentes usado para espetar a comida.
+GENTE | Pessoas; também quer dizer 'nós'.
+GRAMA | Plantinha verde e baixa que cobre jardins e campos.
+IDEIA | Pensamento ou plano que surge na mente.
+JULHO | O sétimo mês do ano.
+JUNHO | O sexto mês do ano, das festas juninas.
+LÁPIS | Objeto de madeira com grafite, usado para escrever e desenhar.
+LEITE | Líquido branco e nutritivo produzido pelas mães mamíferas, como a vaca.
+LETRA | Cada sinal do alfabeto usado para escrever.
+LIMÃO | Fruta verde e azeda.
+LINHA | Fio fino; também um traço reto.
+LIVRO | Conjunto de páginas com textos ou imagens, unidas por uma capa.
+LUGAR | Espaço onde algo está ou acontece.
+MAGIA | Poder de fazer coisas impossíveis, como nas histórias de bruxos.
+MANGA | Fruta tropical doce e amarela; também a parte da roupa que cobre o braço.
+MOEDA | Dinheiro em forma de pequeno disco de metal.
+MONTE | Elevação de terra; também um amontoado de coisas.
+MUNDO | A Terra e tudo o que existe nela.
+NARIZ | Parte do rosto por onde respiramos e sentimos cheiros.
+NINHO | Abrigo que as aves fazem para botar ovos.
+NOITE | Período escuro, entre o pôr do sol e o amanhecer.
+NUVEM | Massa branca ou cinza no céu, formada por gotinhas de água.
+PALCO | Lugar elevado onde artistas se apresentam.
+PAPEL | Material fino feito de árvores, usado para escrever.
+PEDRA | Pedaço duro de rocha.
+PEIXE | Animal que vive na água e respira por guelras.
+PIANO | Instrumento musical de teclas brancas e pretas.
+PONTE | Construção que liga dois lados de um rio ou vale.
+PORTA | Abertura com uma peça que abre e fecha para entrar e sair.
+PRAIA | Faixa de areia à beira do mar.
+PRATO | Recipiente raso onde se põe a comida.
+PRETO | A cor mais escura; a cor da noite sem luz.
+RÁDIO | Aparelho que recebe e toca músicas e notícias.
+REINO | País governado por um rei ou uma rainha.
+ROCHA | Pedra grande e dura.
+ROUPA | Aquilo que vestimos para cobrir o corpo.
+SABÃO | Produto que faz espuma e serve para limpar.
+SINAL | Marca ou aviso; também o semáforo.
+TARDE | Parte do dia entre o meio-dia e a noite; também 'depois da hora'.
+TERRA | O planeta onde vivemos; também o solo.
+TIGRE | Grande felino de pelo laranja com listras pretas.
+TINTA | Líquido colorido usado para pintar ou escrever.
+TORRE | Construção alta e estreita.
+TOURO | Boi adulto e forte, não castrado.
+TREVO | Plantinha de folhas divididas em três (às vezes quatro, que dá sorte).
+TRIGO | Planta cujos grãos viram farinha para fazer pão.
+VENTO | Ar em movimento.
+VERDE | A cor das folhas e da grama.
+VINHO | Bebida feita de uvas; também uma cor vermelho-escura.
+ZEBRA | Animal africano parecido com o cavalo, com listras pretas e brancas.
 
 # 6 letras
-ABELHA
-ÁRVORE
-BALEIA
-BANANA
-CABELO
-CAMELO
-CAMISA
-CAVALO
-CIDADE
-COELHO
-COMIDA
-CORUJA
-ESCOLA
-GIRAFA
-JANELA
-JARDIM
-MACACO
-MENINA
-MENINO
-MÚSICA
-PANELA
-PIPOCA
-PLANTA
-QUEIJO
-RAPOSA
-SAPATO
-TIJOLO
-TOMATE
-VIOLÃO
-ARANHA
-BATATA
-CANETA
-CINEMA
-ESCADA
-ESCOVA
-JACARÉ
-OCEANO
-QUARTO
-SEMANA
-TOALHA
-VIAGEM
-AGOSTO
+ABELHA | Inseto que faz mel e cera.
+ÁRVORE | Planta grande, com tronco, galhos e folhas.
+BALEIA | O maior animal do mar; é um mamífero.
+BANANA | Fruta amarela e comprida, de casca fácil de tirar.
+CABELO | Fios que crescem na cabeça.
+CAMELO | Animal do deserto com duas corcovas nas costas.
+CAMISA | Roupa que cobre o tronco, geralmente com botões.
+CAVALO | Animal grande de quatro patas usado para montar.
+CIDADE | Lugar com muitas casas, ruas e pessoas.
+COELHO | Animal pequeno de orelhas compridas que pula.
+COMIDA | Aquilo que se come.
+CORUJA | Ave noturna de olhos grandes.
+ESCOLA | Lugar onde se aprende com professores.
+GIRAFA | Animal africano de pescoço muito comprido.
+JANELA | Abertura na parede que deixa entrar luz e ar.
+JARDIM | Terreno com flores e plantas.
+MACACO | Animal que vive nas árvores e tem mãos parecidas com as nossas.
+MENINA | Criança do sexo feminino.
+MENINO | Criança do sexo masculino.
+MÚSICA | Arte de combinar sons de forma agradável.
+PANELA | Recipiente usado para cozinhar alimentos.
+PIPOCA | Grão de milho que estoura no calor.
+PLANTA | Ser vivo que nasce da terra, como árvores e flores.
+QUEIJO | Alimento feito de leite coalhado.
+RAPOSA | Animal selvagem de cauda peluda, conhecido por ser esperto.
+SAPATO | Calçado que protege os pés.
+TIJOLO | Bloco usado para construir paredes.
+TOMATE | Fruto vermelho usado em saladas e molhos.
+VIOLÃO | Instrumento musical de seis cordas.
+ARANHA | Bicho de oito patas que faz teias.
+BATATA | Raiz comestível muito usada na cozinha, cozida ou frita.
+CANETA | Objeto com tinta usado para escrever.
+CINEMA | Lugar onde se assistem filmes em uma tela grande.
+ESCADA | Conjunto de degraus para subir ou descer.
+ESCOVA | Objeto com cerdas para pentear ou limpar, como a de dentes.
+JACARÉ | Réptil de boca grande que vive em rios e lagoas.
+OCEANO | Imensa extensão de água salgada que cobre grande parte da Terra.
+QUARTO | Cômodo da casa onde se dorme.
+SEMANA | Período de sete dias.
+TOALHA | Pano usado para enxugar o corpo ou cobrir a mesa.
+VIAGEM | Ida de um lugar para outro, geralmente distante.
+AGOSTO | O oitavo mês do ano.
 
 # 7 letras
-ABACAXI
-ABÓBORA
-ALEGRIA
-AMARELO
-AMIZADE
-BERMUDA
-CADEIRA
-CAMARÃO
-CANGURU
-CENOURA
-CÍRCULO
-COLÉGIO
-CORAÇÃO
-COZINHA
-CRIANÇA
-DESENHO
-DOMINGO
-ESQUILO
-ESTRELA
-FAMÍLIA
-FOGUETE
-FORMIGA
-FUTEBOL
-GALINHA
-JANEIRO
-JAQUETA
-LAGARTO
-LARANJA
-MARTELO
-MERCADO
-MINHOCA
-MOCHILA
-MORANGO
-OUTUBRO
-PALAVRA
-PALHAÇO
-PÁSSARO
-PINGUIM
-PLANETA
-RELÓGIO
-SORRISO
-SORVETE
-TELHADO
-TESOURO
-TUBARÃO
-VARANDA
+ABACAXI | Fruta tropical com casca áspera e uma coroa de folhas.
+ABÓBORA | Fruto grande de casca dura e polpa alaranjada.
+ALEGRIA | Sentimento de felicidade.
+AMARELO | A cor do sol e da gema do ovo.
+AMIZADE | Relação de carinho e confiança entre amigos.
+BERMUDA | Calça curta que vai até o joelho.
+CADEIRA | Móvel com encosto, feito para uma pessoa sentar.
+CAMARÃO | Pequeno animal do mar, de corpo curvado.
+CANGURU | Animal australiano que pula e carrega o filhote em uma bolsa.
+CENOURA | Raiz alaranjada e comestível.
+CÍRCULO | Figura perfeitamente redonda.
+COLÉGIO | O mesmo que escola.
+CORAÇÃO | Órgão que bombeia o sangue pelo corpo; também símbolo do amor.
+COZINHA | Cômodo da casa onde se preparam as refeições.
+CRIANÇA | Pessoa nos primeiros anos de vida.
+DESENHO | Imagem feita com lápis, caneta ou tinta.
+DOMINGO | O primeiro dia da semana, geralmente de descanso.
+ESQUILO | Pequeno roedor de cauda peluda que vive nas árvores.
+ESTRELA | Astro que brilha no céu à noite.
+FAMÍLIA | Grupo de pessoas ligadas por parentesco ou carinho.
+FOGUETE | Veículo que voa para o espaço.
+FORMIGA | Pequeno inseto que vive em grandes grupos.
+FUTEBOL | Esporte em que dois times tentam fazer gols com os pés.
+GALINHA | Ave doméstica que bota ovos.
+JANEIRO | O primeiro mês do ano.
+JAQUETA | Casaco curto.
+LAGARTO | Réptil de corpo comprido, quatro patas e cauda.
+LARANJA | Fruta cítrica e suculenta; também a cor dessa fruta.
+MARTELO | Ferramenta usada para bater pregos.
+MERCADO | Lugar onde se compram alimentos e outros produtos.
+MINHOCA | Bichinho comprido e mole que vive na terra.
+MOCHILA | Bolsa carregada nas costas.
+MORANGO | Fruta vermelha pequena com sementinhas por fora.
+OUTUBRO | O décimo mês do ano.
+PALAVRA | Conjunto de letras que tem um significado.
+PALHAÇO | Artista de circo que faz rir, de roupas e maquiagem coloridas.
+PÁSSARO | Ave pequena que voa e canta.
+PINGUIM | Ave que não voa, nada muito bem e vive em lugares frios.
+PLANETA | Grande astro que gira em volta de uma estrela, como a Terra.
+RELÓGIO | Aparelho que marca as horas.
+SORRISO | Expressão do rosto que mostra alegria.
+SORVETE | Doce gelado e cremoso.
+TELHADO | Cobertura da casa, geralmente feita de telhas.
+TESOURO | Conjunto de riquezas guardadas, como ouro e joias.
+TUBARÃO | Grande peixe do mar com muitos dentes afiados.
+VARANDA | Área aberta de uma casa, com vista para fora.
 
 # 8 letras
-AVENTURA
-BANHEIRO
-BISCOITO
-CACHORRO
-CAMINHÃO
-CAMISETA
-COLORIDO
-DEZEMBRO
-ELEFANTE
-ELEVADOR
-FLORESTA
-GOLFINHO
-GUITARRA
-HISTÓRIA
-HOSPITAL
-JOANINHA
-LANTERNA
-MACARRÃO
-MANTEIGA
-MELANCIA
-MONTANHA
-NATUREZA
-NOVEMBRO
-PANQUECA
-PERGUNTA
-PRESENTE
-PRINCESA
-QUADRADO
-RESPOSTA
-SABONETE
-SETEMBRO
-TELEFONE
-UNIVERSO
-VERMELHO
+AVENTURA | Experiência emocionante e cheia de surpresas.
+BANHEIRO | Cômodo onde se toma banho e se usa o vaso sanitário.
+BISCOITO | Massa assada, crocante, doce ou salgada.
+CACHORRO | Animal de estimação que late; o melhor amigo do ser humano.
+CAMINHÃO | Veículo grande que transporta cargas.
+CAMISETA | Camisa leve, sem botões, de mangas curtas.
+COLORIDO | Que tem muitas cores.
+DEZEMBRO | O décimo segundo e último mês do ano.
+ELEFANTE | O maior animal terrestre, com tromba e orelhas grandes.
+ELEVADOR | Cabine que sobe e desce entre os andares de um prédio.
+FLORESTA | Área grande com muitas árvores.
+GOLFINHO | Mamífero do mar muito inteligente e brincalhão.
+GUITARRA | Instrumento de cordas, geralmente elétrico.
+HISTÓRIA | Narração de fatos reais ou inventados; também o estudo do passado.
+HOSPITAL | Lugar onde médicos cuidam das pessoas doentes.
+JOANINHA | Pequeno inseto vermelho com bolinhas pretas.
+LANTERNA | Aparelho portátil que ilumina.
+MACARRÃO | Massa de farinha cozida em água, de vários formatos.
+MANTEIGA | Alimento feito da gordura do leite, passado no pão.
+MELANCIA | Fruta grande, verde por fora e vermelha por dentro.
+MONTANHA | Elevação de terra muito alta.
+NATUREZA | Tudo o que existe sem ser feito pelo ser humano: plantas, animais, rios.
+NOVEMBRO | O décimo primeiro mês do ano.
+PANQUECA | Massa fina e redonda frita na frigideira, com recheio.
+PERGUNTA | Frase usada para pedir uma informação.
+PRESENTE | Algo que se dá a alguém; também o tempo de agora.
+PRINCESA | Filha de um rei ou de uma rainha.
+QUADRADO | Figura com quatro lados iguais.
+RESPOSTA | O que se diz para responder a uma pergunta.
+SABONETE | Sabão perfumado para lavar o corpo.
+SETEMBRO | O nono mês do ano.
+TELEFONE | Aparelho usado para falar com pessoas à distância.
+UNIVERSO | Tudo o que existe: planetas, estrelas e galáxias.
+VERMELHO | A cor do sangue e do morango.
 
 # 9 letras
-AEROPORTO
-BICICLETA
-BORBOLETA
-BRINQUEDO
-CHOCOLATE
-FEVEREIRO
-GELADEIRA
-LIBERDADE
-PROFESSOR
-RETÂNGULO
-SANDUÍCHE
-TARTARUGA
-TRIÂNGULO
+AEROPORTO | Lugar onde os aviões pousam e decolam.
+BICICLETA | Veículo de duas rodas movido com pedais.
+BORBOLETA | Inseto de asas coloridas que nasce de uma lagarta.
+BRINQUEDO | Objeto usado para brincar.
+CHOCOLATE | Doce feito com cacau.
+FEVEREIRO | O segundo mês do ano, do Carnaval.
+GELADEIRA | Aparelho que mantém os alimentos frios.
+LIBERDADE | Poder de fazer escolhas e agir por conta própria.
+PROFESSOR | Pessoa que ensina.
+RETÂNGULO | Figura com quatro lados e quatro ângulos retos.
+SANDUÍCHE | Pão com recheio, como queijo ou presunto.
+TARTARUGA | Réptil com um casco duro nas costas.
+TRIÂNGULO | Figura com três lados.
 
 # 10 letras
-ASTRONAUTA
-BIBLIOTECA
-CARANGUEJO
-COMPUTADOR
-DINOSSAURO
+ASTRONAUTA | Pessoa que viaja ao espaço.
+BIBLIOTECA | Lugar onde muitos livros são guardados para leitura.
+CARANGUEJO | Animal de carapaça dura e garras que anda de lado.
+COMPUTADOR | Máquina eletrônica que processa informações.
+DINOSSAURO | Grande réptil que viveu há milhões de anos.

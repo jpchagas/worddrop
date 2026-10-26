@@ -5,9 +5,9 @@ using UnityEngine.UI;
 namespace WordDrop.Gameplay.View
 {
     /// <summary>
-    /// Draws the board: the empty cell slots, the placed tiles and the falling
-    /// piece. The tile size adapts to the space this RectTransform gets, so the
-    /// board fits any phone shape.
+    /// Draws the board: the empty cell slots, the placed tiles, the falling
+    /// piece and its ghost (where it will land). The tile size adapts to the
+    /// space this RectTransform gets, so the board fits any phone shape.
     /// </summary>
     [RequireComponent(typeof(RectTransform))]
     public class BoardView : MonoBehaviour
@@ -17,12 +17,16 @@ namespace WordDrop.Gameplay.View
         [SerializeField] private RectTransform tilesRoot;
         [SerializeField] private Sprite slotSprite;
         [SerializeField] private Color slotColor = new Color(0.03f, 0.06f, 0.14f, 0.85f);
+        [SerializeField] private Color ghostColor = new Color(1f, 1f, 1f, 0.16f);
 
         private int width;
         private int height;
         private TileView[,] tiles;
         private Image[,] slots;
-        private readonly TileView[] pieceTiles = new TileView[Piece.BlockCount];
+        private readonly List<TileView> pieceTiles = new List<TileView>();
+        private readonly List<Image> ghostCells = new List<Image>();
+        private readonly List<Vector2Int> ghostPositions = new List<Vector2Int>();
+        private RectTransform ghostRoot;
         private Piece piece;
         private Vector2 origin;
 
@@ -40,55 +44,109 @@ namespace WordDrop.Gameplay.View
             {
                 for (int y = 0; y < height; y++)
                 {
-                    var slot = new GameObject($"Slot {x},{y}", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
-                    slot.transform.SetParent(slotsRoot, false);
-                    slot.sprite = slotSprite;
-                    slot.type = Image.Type.Sliced;
-                    slot.color = slotColor;
-                    slot.raycastTarget = false;
-                    slots[x, y] = slot;
+                    slots[x, y] = CreateCellImage($"Slot {x},{y}", slotsRoot, slotColor);
                 }
             }
+
+            // Ghost cells sit behind the tiles.
+            ghostRoot = new GameObject("Ghost", typeof(RectTransform)).GetComponent<RectTransform>();
+            ghostRoot.SetParent(tilesRoot, false);
+            ghostRoot.SetAsFirstSibling();
 
             Relayout();
         }
 
+        /// <summary>Creates tiles for letters already on the board (pre-filled levels).</summary>
+        public void ShowBoard(Board board)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (board[x, y] != Board.Empty)
+                    {
+                        AddTile(new Vector2Int(x, y), board[x, y]);
+                    }
+                }
+            }
+        }
+
+        public void AddTile(Vector2Int cell, char letter, int hint = Piece.NoHint) => tiles[cell.x, cell.y] = CreateTile(letter, hint, cell);
+
         public void ShowPiece(Piece newPiece)
         {
             piece = newPiece;
-            for (int i = 0; i < Piece.BlockCount; i++)
+            pieceTiles.Clear();
+            for (int i = 0; i < piece.BlockCount; i++)
             {
-                pieceTiles[i] = CreateTile(piece.Letters[i], piece.CellOf(i));
+                pieceTiles.Add(CreateTile(piece.Letters[i], piece.Hints[i], piece.CellOf(i)));
             }
         }
 
         /// <summary>Call after the piece moved or rotated; each tile glides to its block's new cell.</summary>
         public void UpdatePiece()
         {
-            for (int i = 0; i < Piece.BlockCount; i++)
+            for (int i = 0; i < pieceTiles.Count; i++)
             {
                 pieceTiles[i].MoveTo(CellCenter(piece.CellOf(i)));
             }
         }
 
+        /// <summary>Shows where the piece would land (GDD 1.2), or hides the ghost when null.</summary>
+        public void ShowGhost(IReadOnlyList<Vector2Int> cells)
+        {
+            ghostPositions.Clear();
+            if (cells != null)
+            {
+                ghostPositions.AddRange(cells);
+            }
+
+            while (ghostCells.Count < ghostPositions.Count)
+            {
+                ghostCells.Add(CreateCellImage("GhostCell", ghostRoot, ghostColor));
+            }
+
+            for (int i = 0; i < ghostCells.Count; i++)
+            {
+                bool visible = i < ghostPositions.Count;
+                ghostCells[i].gameObject.SetActive(visible);
+                if (visible)
+                {
+                    PlaceCellImage(ghostCells[i], ghostPositions[i]);
+                }
+            }
+        }
+
+        /// <summary>Swaps the falling piece's tiles, e.g. after a booster replaced the piece.</summary>
+        public void ReplacePiece(Piece newPiece)
+        {
+            foreach (TileView tile in pieceTiles)
+            {
+                tile.Vanish();
+            }
+
+            ShowPiece(newPiece);
+        }
+
         /// <summary>The landed piece's tiles become regular board tiles.</summary>
         public void LockPiece()
         {
-            for (int i = 0; i < Piece.BlockCount; i++)
+            for (int i = 0; i < pieceTiles.Count; i++)
             {
                 Vector2Int cell = piece.CellOf(i);
                 tiles[cell.x, cell.y] = pieceTiles[i];
-                pieceTiles[i] = null;
             }
 
+            pieceTiles.Clear();
             piece = null;
+            ShowGhost(null);
         }
 
         public void Highlight(IEnumerable<Vector2Int> cells)
         {
             foreach (Vector2Int cell in cells)
             {
-                tiles[cell.x, cell.y].Highlight();
+                tiles[cell.x, cell.y]?.Highlight();
             }
         }
 
@@ -96,11 +154,15 @@ namespace WordDrop.Gameplay.View
         {
             foreach (Vector2Int cell in cells)
             {
-                tiles[cell.x, cell.y].Vanish();
-                tiles[cell.x, cell.y] = null;
+                if (tiles[cell.x, cell.y] != null)
+                {
+                    tiles[cell.x, cell.y].Vanish();
+                    tiles[cell.x, cell.y] = null;
+                }
             }
         }
 
+        /// <summary>Moves tiles as the board did. Moves must come in the order the board made them.</summary>
         public void ApplyMoves(List<(Vector2Int from, Vector2Int to)> moves)
         {
             foreach (var (from, to) in moves)
@@ -112,14 +174,31 @@ namespace WordDrop.Gameplay.View
             }
         }
 
-        internal void AddTile(Vector2Int cell, char letter) => tiles[cell.x, cell.y] = CreateTile(letter, cell);
-
-        private TileView CreateTile(char letter, Vector2Int cell)
+        private TileView CreateTile(char letter, int hint, Vector2Int cell)
         {
             TileView tile = Instantiate(tilePrefab, tilesRoot);
             tile.name = $"Tile {letter}";
-            tile.Setup(letter, CellSize, CellCenter(cell));
+            tile.Setup(letter, hint, CellSize, CellCenter(cell));
             return tile;
+        }
+
+        private Image CreateCellImage(string objectName, Transform parent, Color color)
+        {
+            var image = new GameObject(objectName, typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+            image.transform.SetParent(parent, false);
+            image.sprite = slotSprite;
+            image.type = Image.Type.Sliced;
+            image.color = color;
+            image.raycastTarget = false;
+            return image;
+        }
+
+        private void PlaceCellImage(Image image, Vector2Int cell)
+        {
+            var rect = (RectTransform)image.transform;
+            rect.sizeDelta = Vector2.one * (CellSize * 0.92f);
+            rect.anchoredPosition = CellCenter(cell);
+            TileView.SetCornerRadius(image, CellSize * 0.2f);
         }
 
         private Vector2 CellCenter(Vector2Int cell) =>
@@ -144,10 +223,7 @@ namespace WordDrop.Gameplay.View
             {
                 for (int y = 0; y < height; y++)
                 {
-                    var slotRect = (RectTransform)slots[x, y].transform;
-                    slotRect.sizeDelta = Vector2.one * (CellSize * 0.92f);
-                    TileView.SetCornerRadius(slots[x, y], CellSize * 0.2f);
-                    slotRect.anchoredPosition = CellCenter(new Vector2Int(x, y));
+                    PlaceCellImage(slots[x, y], new Vector2Int(x, y));
 
                     if (tiles[x, y] != null)
                     {
@@ -157,14 +233,13 @@ namespace WordDrop.Gameplay.View
                 }
             }
 
-            if (piece != null)
+            for (int i = 0; i < pieceTiles.Count; i++)
             {
-                for (int i = 0; i < Piece.BlockCount; i++)
-                {
-                    pieceTiles[i].SetSize(CellSize);
-                    pieceTiles[i].Snap(CellCenter(piece.CellOf(i)));
-                }
+                pieceTiles[i].SetSize(CellSize);
+                pieceTiles[i].Snap(CellCenter(piece.CellOf(i)));
             }
+
+            ShowGhost(new List<Vector2Int>(ghostPositions));
         }
     }
 }

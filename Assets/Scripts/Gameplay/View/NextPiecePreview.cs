@@ -25,7 +25,7 @@ namespace WordDrop.Gameplay.View
                 return;
             }
 
-            var cells = new Vector2Int[Piece.BlockCount];
+            var cells = new Vector2Int[piece.BlockCount];
             Vector2 min = Vector2.positiveInfinity;
             Vector2 max = Vector2.negativeInfinity;
             for (int i = 0; i < cells.Length; i++)
@@ -44,7 +44,7 @@ namespace WordDrop.Gameplay.View
             for (int i = 0; i < cells.Length; i++)
             {
                 TileView tile = Instantiate(tilePrefab, tilesRoot);
-                tile.Setup(piece.Letters[i], cellSize, ((Vector2)cells[i] - center) * cellSize);
+                tile.Setup(piece.Letters[i], piece.Hints[i], cellSize, ((Vector2)cells[i] - center) * cellSize);
                 tiles.Add(tile);
             }
         }

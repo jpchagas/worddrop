@@ -1,6 +1,6 @@
-using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using WordDrop.Audio;
 using WordDrop.Core;
 using WordDrop.Gameplay;
@@ -8,34 +8,43 @@ using WordDrop.Gameplay;
 namespace WordDrop.Screens
 {
     /// <summary>
-    /// Main menu buttons and the settings panel. Features that don't exist yet
-    /// show a short "Em breve!" message.
+    /// Main menu (GDD 7.1): campaign (via the level map), Endless, Daily
+    /// Challenge, How to Play, achievements, records and settings.
     /// </summary>
     public class MainMenuScreen : MonoBehaviour
     {
+        [SerializeField] private TMP_Text playLabel;
+        [SerializeField] private TMP_Text endlessBestLabel;
         [SerializeField] private GameObject settingsPanel;
+        [SerializeField] private GameObject howToPlayPanel;
         [SerializeField] private TMP_Text musicToggleLabel;
-        [SerializeField] private CanvasGroup toast;
-        [SerializeField] private float toastSeconds = 1.2f;
-
-        private Coroutine toastRoutine;
+        [SerializeField] private TMP_Text soundToggleLabel;
+        [SerializeField] private TMP_Text vibrationToggleLabel;
 
         private void Start()
         {
             settingsPanel.SetActive(false);
-            toast.alpha = 0f;
-            RefreshMusicLabel();
+            howToPlayPanel.SetActive(false);
+            int level = Mathf.Min(PlayerData.UnlockedLevel, GameSession.CampaignLevelCount);
+            playLabel.text = string.Format(Strings.PlayLevelFormat, level);
+            endlessBestLabel.text = PlayerData.EndlessBest > 0
+                ? string.Format(Strings.EndlessBestFormat, Strings.FormatNumber(PlayerData.EndlessBest))
+                : "";
+            RefreshSettingLabels();
         }
 
-        public void Play()
+        /// <summary>"Jogar" opens the level map, where the next level is highlighted.</summary>
+        public void Play() => SceneManager.LoadScene(SceneNames.LevelMap);
+
+        public void PlayEndless()
         {
-            LevelSelection.CurrentIndex = 0;
+            GameSession.Mode = GameMode.Endless;
             SceneLoader.LoadWithLoadingScreen(SceneNames.Game);
         }
 
-        public void DailyChallenge() => ShowComingSoon();
+        public void OpenHowToPlay() => howToPlayPanel.SetActive(true);
 
-        public void HowToPlay() => ShowComingSoon();
+        public void CloseHowToPlay() => howToPlayPanel.SetActive(false);
 
         public void OpenSettings() => settingsPanel.SetActive(true);
 
@@ -44,37 +53,31 @@ namespace WordDrop.Screens
         public void ToggleMusic()
         {
             MusicPlayer.ToggleMusic();
-            RefreshMusicLabel();
+            RefreshSettingLabels();
         }
 
-        private void RefreshMusicLabel()
+        public void ToggleSound()
+        {
+            PlayerData.SoundOn = !PlayerData.SoundOn;
+            RefreshSettingLabels();
+        }
+
+        public void ToggleVibration()
+        {
+            PlayerData.VibrationOn = !PlayerData.VibrationOn;
+            if (PlayerData.VibrationOn)
+            {
+                Haptics.Pulse(); // Lets the player feel what they turned on.
+            }
+
+            RefreshSettingLabels();
+        }
+
+        private void RefreshSettingLabels()
         {
             musicToggleLabel.text = PlayerData.MusicOn ? Strings.MusicOn : Strings.MusicOff;
-        }
-
-        private void ShowComingSoon()
-        {
-            if (toastRoutine != null)
-            {
-                StopCoroutine(toastRoutine);
-            }
-
-            toastRoutine = StartCoroutine(ShowToast());
-        }
-
-        private IEnumerator ShowToast()
-        {
-            toast.alpha = 1f;
-            yield return new WaitForSecondsRealtime(toastSeconds);
-
-            for (float t = 0f; t < 0.3f; t += Time.unscaledDeltaTime)
-            {
-                toast.alpha = 1f - t / 0.3f;
-                yield return null;
-            }
-
-            toast.alpha = 0f;
-            toastRoutine = null;
+            soundToggleLabel.text = PlayerData.SoundOn ? Strings.SoundOn : Strings.SoundOff;
+            vibrationToggleLabel.text = PlayerData.VibrationOn ? Strings.VibrationOn : Strings.VibrationOff;
         }
     }
 }

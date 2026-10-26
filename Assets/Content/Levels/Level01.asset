@@ -13,9 +13,31 @@ MonoBehaviour:
   m_Name: Level01
   m_EditorClassIdentifier: WordDrop::WordDrop.Gameplay.LevelDefinition
   levelNumber: 1
+  difficulty: 0
+  endless: 0
+  tip: "Toque para girar a pe\xE7a, arraste para os lados para mover e para baixo
+    para descer. Um toque r\xE1pido para baixo solta a pe\xE7a. Forme palavras!"
+  objectives:
+  - type: 0
+    target: 500
+  moveLimit: 0
+  starScores: f4010000200300004c040000
   boardWidth: 10
   boardHeight: 20
-  pieces: 40
-  fallInterval: 0.7
-  wordPieceChance: 0.6
-  starScores: 2c0100005802000084030000
+  prefillRows: []
+  gravity: 0
+  fallInterval: 1
+  wordPieceChance: 0.75
+  pieceSequence:
+  - I3 SOL 2
+  - I3 MAR 3
+  - T LUAE 2
+  - "I3 P\xC3O 2"
+  - L MELA 3
+  - I CASA 2
+  - J RUAS 2
+  speedUpEveryPieces: 10
+  speedUpFactor: 0.9
+  minFallInterval: 0.12
+  garbageEveryPieces: 15
+  garbageStartPiece: 30

@@ -17,7 +17,9 @@ using WordDrop.UI;
 namespace WordDrop.EditorTools
 {
     /// <summary>
-    /// Generates the Splash, Consent, Loading and MainMenu scenes and their UI.
+    /// Generates every scene and its UI (this file: Splash, Consent, Loading and
+    /// shared helpers; SceneBuilder.Menu.cs: MainMenu and LevelMap;
+    /// SceneBuilder.Game.cs: Game).
     /// Running it again OVERWRITES those scenes, so after you start tweaking a
     /// scene by hand in the Editor, stop regenerating it.
     /// </summary>
@@ -58,10 +60,16 @@ namespace WordDrop.EditorTools
             gradient = AssetDatabase.LoadAssetAtPath<Sprite>(GradientSpritePath);
             font = TMP_Settings.defaultFontAsset;
 
+            CreateStarSprite();
+            CreateIconSprites();
+            CreateTilePrefab();
+            LevelCatalog.CreateMissing();
+
             BuildSplash();
             BuildConsent();
             BuildLoading();
             BuildMainMenu();
+            BuildLevelMap();
             BuildGame();
         }
 
@@ -135,71 +143,6 @@ namespace WordDrop.EditorTools
             Wire(screen, "percentLabel", percent);
 
             Save(ui.Scene, SceneNames.Loading);
-        }
-
-        private static void BuildMainMenu()
-        {
-            var ui = NewUiScene(GradientBottom, useGradient: true);
-            var screen = new GameObject("MainMenuScreen").AddComponent<MainMenuScreen>();
-
-            var music = new GameObject("MusicPlayer", typeof(AudioSource));
-            music.GetComponent<AudioSource>().clip = AssetDatabase.LoadAssetAtPath<AudioClip>(ProjectSetup.MusicPath);
-            music.GetComponent<AudioSource>().playOnAwake = false;
-            music.AddComponent<MusicPlayer>();
-
-            Logo(ui.Safe, new Vector2(0, -420), 840);
-
-            GameObject column = Child("Buttons", ui.Safe);
-            Place(column, new Vector2(0.5f, 0.5f), new Vector2(0, -330), new Vector2(800, 680));
-            VerticalStack(column, padding: 0, spacing: 36);
-
-            Button play = PrimaryButton(column.transform, "PlayButton", Strings.Play, 170, 76, out _);
-            Button daily = SecondaryButton(column.transform, "DailyChallengeButton", Strings.DailyChallenge, 130, out _);
-            Button howTo = SecondaryButton(column.transform, "HowToPlayButton", Strings.HowToPlay, 130, out _);
-            Button settings = SecondaryButton(column.transform, "SettingsButton", Strings.Settings, 130, out _);
-
-            TMP_Text credits = Label(ui.Safe, "Credits", Strings.Credits, 26, TextMuted);
-            Place(credits.gameObject, new Vector2(0.5f, 0f), new Vector2(0, 50), new Vector2(1000, 50));
-
-            GameObject toast = RoundedPanel("Toast", ui.Safe, TrackDark, 1f);
-            Place(toast, new Vector2(0.5f, 0f), new Vector2(0, 220), new Vector2(520, 110));
-            var toastGroup = toast.AddComponent<CanvasGroup>();
-            toastGroup.alpha = 0f;
-            toastGroup.blocksRaycasts = false;
-            Stretch(Label(toast.transform, "Label", Strings.ComingSoon, 48, Yellow, FontStyles.Bold).rectTransform);
-
-            // Settings panel
-            GameObject settingsPanel = Child("SettingsPanel", ui.Safe, typeof(Image));
-            Stretch((RectTransform)settingsPanel.transform);
-            settingsPanel.GetComponent<Image>().color = Dim;
-
-            GameObject settingsCard = RoundedPanel("Card", settingsPanel.transform, Card, 1f);
-            Place(settingsCard, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(860, 820));
-            VerticalStack(settingsCard, padding: 60, spacing: 30);
-
-            Sized(Label(settingsCard.transform, "Title", Strings.Settings, 64, TextWhite, FontStyles.Bold), 100);
-            Button musicToggle = SecondaryButton(settingsCard.transform, "MusicToggle", Strings.MusicOn, 120, out TMP_Text musicLabel);
-            Button terms = SecondaryButton(settingsCard.transform, "TermsButton", Strings.TermsOfUse, 120, out _);
-            Button privacy = SecondaryButton(settingsCard.transform, "PrivacyButton", Strings.PrivacyPolicy, 120, out _);
-            Button close = PrimaryButton(settingsCard.transform, "CloseButton", Strings.Close, 130, 52, out _);
-            settingsPanel.SetActive(false);
-
-            LegalTextPanel legal = LegalPanel(ui.Safe);
-
-            Wire(screen, "settingsPanel", settingsPanel);
-            Wire(screen, "musicToggleLabel", musicLabel);
-            Wire(screen, "toast", toastGroup);
-
-            OnClick(play, screen.Play);
-            OnClick(daily, screen.DailyChallenge);
-            OnClick(howTo, screen.HowToPlay);
-            OnClick(settings, screen.OpenSettings);
-            OnClick(musicToggle, screen.ToggleMusic);
-            OnClick(terms, legal.ShowTermsOfUse);
-            OnClick(privacy, legal.ShowPrivacyPolicy);
-            OnClick(close, screen.CloseSettings);
-
-            Save(ui.Scene, SceneNames.MainMenu);
         }
 
         // ---------------------------------------------------------------- Shared pieces
