@@ -157,15 +157,15 @@ namespace WordDrop.EditorTools
             Wire(nextPreview, "tilePrefab", tilePrefab);
             Wire(nextPreview, "tilesRoot", nextTiles.transform);
 
-            GameObject pause = RoundedPanel("PauseButton", root.transform, Secondary, 0.9f);
-            Place(pause, new Vector2(1, 1), new Vector2(-80, -110), new Vector2(110, 110));
-            var pauseButton = pause.AddComponent<Button>();
-            pauseButton.targetGraphic = pause.GetComponent<Image>();
+            const float pauseSize = 110f;
+            GameObject pause = ButtonFace("PauseButton", root.transform, Secondary, pauseSize);
+            Place(pause, new Vector2(1, 1), new Vector2(-80, -110), new Vector2(pauseSize, pauseSize));
+            Button pauseButton = MakeClickable(pause);
             foreach (float x in new[] { -14f, 14f })
             {
                 GameObject bar = RoundedPanel("Bar", pause.transform, TextWhite, 6f);
                 bar.GetComponent<Image>().raycastTarget = false;
-                Place(bar, new Vector2(0.5f, 0.5f), new Vector2(x, 0), new Vector2(16, 50));
+                Place(bar, new Vector2(0.5f, 0.5f), new Vector2(x, ButtonLipHeight(pauseSize) / 2f), new Vector2(16, 50));
             }
 
             OnClick(pauseButton, controller.Pause);
@@ -306,7 +306,7 @@ namespace WordDrop.EditorTools
                 StarImage(starRow.transform, "Star3", star, new Vector2(0.5f, 0.5f), new Vector2(210, -20), 150),
             };
 
-            GameObject stats = RoundedPanel("Stats", card.transform, TrackDark, 1f);
+            GameObject stats = RoundedPanel("Stats", card.transform, Inset, 1f);
             Sized(stats, 270);
             VerticalStack(stats, padding: 25, spacing: 8);
             TMP_Text score = StatRow(stats.transform, "ScoreRow", Strings.Score, TextWhite);
@@ -352,7 +352,7 @@ namespace WordDrop.EditorTools
             TMP_Text reason = Label(card.transform, "Reason", Strings.BoardFull, 38, TextMuted);
             Sized(reason, 130);
 
-            GameObject stats = RoundedPanel("Stats", card.transform, TrackDark, 1f);
+            GameObject stats = RoundedPanel("Stats", card.transform, Inset, 1f);
             Sized(stats, 220);
             VerticalStack(stats, padding: 30, spacing: 10);
             TMP_Text score = StatRow(stats.transform, "ScoreRow", Strings.Score, TextWhite);
@@ -394,8 +394,7 @@ namespace WordDrop.EditorTools
                 var shadow = circle.AddComponent<Shadow>();
                 shadow.effectColor = new Color(0, 0, 0, 0.35f);
                 shadow.effectDistance = new Vector2(0, -6);
-                buttons[i] = circle.AddComponent<Button>();
-                buttons[i].targetGraphic = circle.GetComponent<Image>();
+                buttons[i] = MakeClickable(circle);
 
                 GameObject icon = Child("Icon", circle.transform, typeof(Image));
                 Stretch((RectTransform)icon.transform, 26, 26, 26, 26);
@@ -430,8 +429,9 @@ namespace WordDrop.EditorTools
             Stretch((RectTransform)root.transform);
             root.GetComponent<Image>().color = Dim;
 
-            GameObject card = RoundedPanel("Card", root.transform, Card, 1f);
+            GameObject card = CardPanel("Card", root.transform);
             Stretch((RectTransform)card.transform, 50, 80, 50, 80);
+            AddPopIn(root, card);
 
             TMP_Text title = Label(card.transform, "Title", Strings.Meanings, 56, TextWhite, FontStyles.Bold);
             Place(title.gameObject, new Vector2(0.5f, 1), new Vector2(0, -85), new Vector2(800, 90));
@@ -464,9 +464,11 @@ namespace WordDrop.EditorTools
             Stretch((RectTransform)root.transform);
             root.GetComponent<Image>().color = Dim;
 
-            card = RoundedPanel("Card", root.transform, Card, 1f);
+            SoftShadow(root.transform, new Vector2(0.5f, 0.5f), Vector2.zero, size, alpha: 0.7f);
+            card = CardPanel("Card", root.transform);
             Place(card, new Vector2(0.5f, 0.5f), Vector2.zero, size);
             VerticalStack(card, padding: 60, spacing: 30);
+            AddPopIn(root, card);
             return root;
         }
 
@@ -496,18 +498,15 @@ namespace WordDrop.EditorTools
         {
             Directory.CreateDirectory(Path.GetDirectoryName(TilePrefabPath));
 
-            GameObject go = RoundedPanel("Tile", null, Color.white, 1.6f);
-            go.GetComponent<Image>().raycastTarget = false;
+            // The glossy tile sprite already has its own lip, so no extra drop shadow.
+            GameObject go = TileFace("Tile", null, Color.white);
             ((RectTransform)go.transform).sizeDelta = new Vector2(140, 140);
-            var shadow = go.AddComponent<Shadow>();
-            shadow.effectColor = new Color(0, 0, 0, 0.4f);
-            shadow.effectDistance = new Vector2(0, -6);
 
             TMP_Text letter = Label(go.transform, "Letter", "A", 80, TextWhite, FontStyles.Bold);
-            Stretch(letter.rectTransform);
+            TileLetter(letter);
 
             GameObject icon = Child("Icon", go.transform, typeof(Image));
-            Stretch((RectTransform)icon.transform, 14, 14, 14, 14);
+            Stretch((RectTransform)icon.transform, 18, 24, 18, 12);
             icon.GetComponent<Image>().preserveAspect = true;
             icon.GetComponent<Image>().raycastTarget = false;
             icon.SetActive(false);

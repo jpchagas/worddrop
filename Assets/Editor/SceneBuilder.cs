@@ -34,15 +34,17 @@ namespace WordDrop.EditorTools
 
         private static readonly Vector2 ReferenceResolution = new Vector2(1080, 1920);
 
-        // Palette from screens_draft.png.
+        // Palette from screens_draft.png. Button, card and tile colors are the
+        // brightest (gloss/rim) shade; the generated sprites darken the rest.
         private static readonly Color SplashBackground = Hex(0x0B0B12);
-        private static readonly Color GradientTop = Hex(0x1B3058);
-        private static readonly Color GradientBottom = Hex(0x0A1226);
-        private static readonly Color Card = Hex(0x15264A);
-        private static readonly Color Dim = new Color(0f, 0f, 0f, 0.65f);
-        private static readonly Color Green = Hex(0x3DB54A);
-        private static readonly Color Secondary = Hex(0x243B66);
+        private static readonly Color GradientBottom = Hex(0x080F26);
+        private static readonly Color Card = Hex(0x2A4A86);
+        private static readonly Color Dim = new Color(0.01f, 0.03f, 0.09f, 0.78f);
+        private static readonly Color Green = Hex(0x62E36B);
+        private static readonly Color Secondary = Hex(0x3A62A8);
         private static readonly Color TrackDark = Hex(0x081022);
+        /// <summary>Recessed areas inside a card, like the stats box on result panels.</summary>
+        private static readonly Color Inset = Hex(0x0B1736, 0.7f);
         private static readonly Color TextWhite = Color.white;
         private static readonly Color TextMuted = Hex(0xB4C2DC);
         private static readonly Color Yellow = Hex(0xFFC83A);
@@ -56,9 +58,9 @@ namespace WordDrop.EditorTools
         public static void BuildAllScenes()
         {
             CreateUiSprites();
+            LoadStyle();
             rounded = AssetDatabase.LoadAssetAtPath<Sprite>(RoundedSpritePath);
             gradient = AssetDatabase.LoadAssetAtPath<Sprite>(GradientSpritePath);
-            font = TMP_Settings.defaultFontAsset;
 
             CreateStarSprite();
             CreateIconSprites();
@@ -99,7 +101,8 @@ namespace WordDrop.EditorTools
 
             Logo(ui.Safe, new Vector2(0, -380), 760);
 
-            GameObject card = RoundedPanel("Card", ui.Safe, Card, 1f);
+            SoftShadow(ui.Safe, new Vector2(0.5f, 0.5f), new Vector2(0, -250), new Vector2(940, 900));
+            GameObject card = CardPanel("Card", ui.Safe);
             Place(card, new Vector2(0.5f, 0.5f), new Vector2(0, -250), new Vector2(940, 900));
             VerticalStack(card, padding: 60, spacing: 30);
 
@@ -213,8 +216,9 @@ namespace WordDrop.EditorTools
             Stretch((RectTransform)root.transform);
             root.GetComponent<Image>().color = Dim;
 
-            GameObject card = RoundedPanel("Card", root.transform, Card, 1f);
+            GameObject card = CardPanel("Card", root.transform);
             Stretch((RectTransform)card.transform, 50, 80, 50, 80);
+            AddPopIn(root, card);
 
             TMP_Text title = Label(card.transform, "Title", Strings.TermsOfUse, 56, TextWhite, FontStyles.Bold);
             var titleRect = title.rectTransform;
@@ -273,18 +277,104 @@ namespace WordDrop.EditorTools
 
         private static Button MakeButton(Transform parent, string name, string text, Color color, float height, float fontSize, out TMP_Text label)
         {
-            GameObject go = RoundedPanel(name, parent, color, 1.2f);
+            GameObject go = ButtonFace(name, parent, color, height);
             Sized(go, height);
-            var shadow = go.AddComponent<Shadow>();
-            shadow.effectColor = new Color(0, 0, 0, 0.35f);
-            shadow.effectDistance = new Vector2(0, -8);
-
-            var button = go.AddComponent<Button>();
-            button.targetGraphic = go.GetComponent<Image>();
+            Button button = MakeClickable(go);
 
             label = Label(go.transform, "Label", text, fontSize, TextWhite, FontStyles.Bold);
-            Stretch(label.rectTransform, 20, 0, 20, 0);
+            label.enableAutoSizing = true; // Long pt-BR labels shrink instead of wrapping.
+            label.fontSizeMin = fontSize * 0.6f;
+            label.fontSizeMax = fontSize;
+            label.textWrappingMode = TextWrappingModes.NoWrap;
+            Stretch(label.rectTransform, 30, ButtonLipHeight(height), 30, 0);
             return button;
+        }
+
+        /// <summary>The 3D button shape (glossy face over a darker lip), sized for <paramref name="height"/>.</summary>
+        private static GameObject ButtonFace(string name, Transform parent, Color color, float height)
+        {
+            GameObject go = Child(name, parent, typeof(Image));
+            var image = go.GetComponent<Image>();
+            image.sprite = buttonSprite;
+            image.type = Image.Type.Sliced;
+            image.pixelsPerUnitMultiplier = ButtonSlice(height);
+            image.color = color;
+            return go;
+        }
+
+        /// <summary>Makes an Image a button that squashes when pressed.</summary>
+        private static Button MakeClickable(GameObject go)
+        {
+            var button = go.AddComponent<Button>();
+            button.targetGraphic = go.GetComponent<Image>();
+            ColorBlock colors = button.colors;
+            colors.pressedColor = new Color(0.85f, 0.85f, 0.85f, 1f);
+            colors.disabledColor = new Color(0.6f, 0.6f, 0.65f, 0.6f);
+            colors.fadeDuration = 0.08f;
+            button.colors = colors;
+            go.AddComponent<ButtonFeedback>();
+            return button;
+        }
+
+        /// <summary>A card: rounded face with a lighter rim, for panels and list items.</summary>
+        private static GameObject CardPanel(string name, Transform parent, Color? color = null)
+        {
+            GameObject go = Child(name, parent, typeof(Image));
+            var image = go.GetComponent<Image>();
+            image.sprite = cardSprite;
+            image.type = Image.Type.Sliced;
+            image.color = color ?? Card;
+            return go;
+        }
+
+        /// <summary>A glossy letter tile shape (same sprite as the board tiles), for badges and illustrations.</summary>
+        private static GameObject TileFace(string name, Transform parent, Color color)
+        {
+            GameObject go = Child(name, parent, typeof(Image));
+            var image = go.GetComponent<Image>();
+            image.sprite = tileSprite;
+            image.color = color;
+            image.raycastTarget = false;
+            return go;
+        }
+
+        /// <summary>Fills a tile with its label, sitting on the face above the tile's lip.</summary>
+        private static void TileLetter(TMP_Text label)
+        {
+            RectTransform rect = label.rectTransform;
+            rect.anchorMin = new Vector2(0f, Gameplay.View.TileView.LipFraction);
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+        }
+
+        /// <summary>A soft shadow under something placed at the same anchor, position and size.</summary>
+        private static GameObject SoftShadow(Transform parent, Vector2 anchor, Vector2 position, Vector2 size, float alpha = 0.55f)
+        {
+            GameObject go = Child("Shadow", parent, typeof(Image));
+            // The sprite's blur sits inside its 60-pixel border, so grow the shadow by that much.
+            Place(go, anchor, position + new Vector2(0, -18), size + new Vector2(70, 70));
+            var image = go.GetComponent<Image>();
+            image.sprite = softShadow;
+            image.type = Image.Type.Sliced;
+            image.color = new Color(0f, 0f, 0f, alpha);
+            image.raycastTarget = false;
+            return go;
+        }
+
+        /// <summary>Fades <paramref name="root"/> in and springs <paramref name="card"/> up each time the root is shown.</summary>
+        private static void AddPopIn(GameObject root, GameObject card, float startScale = 0.86f)
+        {
+            var popIn = root.AddComponent<PopIn>();
+            if (!root.TryGetComponent(out CanvasGroup group))
+            {
+                group = root.AddComponent<CanvasGroup>();
+            }
+
+            Wire(popIn, "group", group);
+            Wire(popIn, "card", card != null ? card.transform : null);
+            var serialized = new SerializedObject(popIn);
+            serialized.FindProperty("startScale").floatValue = startScale;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
         // ---------------------------------------------------------------- Low-level helpers
@@ -318,11 +408,18 @@ namespace WordDrop.EditorTools
         {
             GameObject go = Child(name, parent);
             var label = go.AddComponent<TextMeshProUGUI>();
-            label.font = font;
+            // Bold uses the real Fredoka Bold (with a soft shadow) instead of a faked bold.
+            bool bold = (style & FontStyles.Bold) != 0;
+            label.font = bold ? boldFont : font;
+            if (bold)
+            {
+                label.fontSharedMaterial = boldShadowMaterial;
+            }
+
             label.text = text;
             label.fontSize = size;
             label.color = color;
-            label.fontStyle = style;
+            label.fontStyle = style & ~FontStyles.Bold;
             label.alignment = alignment;
             label.textWrappingMode = TextWrappingModes.Normal;
             label.raycastTarget = false;
@@ -428,18 +525,7 @@ namespace WordDrop.EditorTools
             }
 
             WriteSprite(roundedTexture, RoundedSpritePath, new Vector4(radius, radius, radius, radius));
-
-            var gradientTexture = new Texture2D(4, 256, TextureFormat.RGBA32, false);
-            for (int y = 0; y < 256; y++)
-            {
-                Color color = Color.Lerp(GradientBottom, GradientTop, y / 255f);
-                for (int x = 0; x < 4; x++)
-                {
-                    gradientTexture.SetPixel(x, y, color);
-                }
-            }
-
-            WriteSprite(gradientTexture, GradientSpritePath, Vector4.zero);
+            // The background (GradientSpritePath) is drawn in SceneBuilder.Style.cs.
         }
 
         private static void WriteSprite(Texture2D texture, string path, Vector4 border)

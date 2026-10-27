@@ -13,8 +13,8 @@ namespace WordDrop.Screens
         [SerializeField] private AchievementRow[] rows;
         [SerializeField] private TMP_Text countLabel;
         [SerializeField] private TMP_Text statsLabel;
-        [SerializeField] private Color lockedColor = new Color32(0x0F, 0x1B, 0x36, 0xFF);
-        [SerializeField] private Color unlockedColor = new Color32(0x1E, 0x4D, 0x2E, 0xFF);
+        [SerializeField] private Color lockedColor = new Color32(0x24, 0x3E, 0x72, 0xFF);
+        [SerializeField] private Color unlockedColor = new Color32(0x2F, 0x7D, 0x50, 0xFF);
 
         public void Open()
         {

@@ -13,20 +13,24 @@ namespace WordDrop.Gameplay.View
     /// </summary>
     public class TileView : MonoBehaviour
     {
-        // The five hint colors, from screens_draft.png; index = hint - 1.
+        /// <summary>Share of the tile's height taken by the darker lip at its bottom (from the generated tile sprite).</summary>
+        public const float LipFraction = 13f / 160f;
+
+        // The five hint colors, from screens_draft.png; index = hint - 1. These
+        // are the gloss shade: the tile sprite darkens the face below it.
         private static readonly Color[] HintColors =
         {
-            new Color32(0x8E, 0x4D, 0xDB, 0xFF), // purple
-            new Color32(0x3D, 0xB5, 0x4A, 0xFF), // green
-            new Color32(0xF3, 0x9A, 0x1E, 0xFF), // orange
-            new Color32(0x2F, 0x80, 0xED, 0xFF), // blue
-            new Color32(0xE5, 0x48, 0x4D, 0xFF), // red
+            new Color32(0xB0, 0x6C, 0xFF, 0xFF), // purple
+            new Color32(0x55, 0xE0, 0x6A, 0xFF), // green
+            new Color32(0xFF, 0xB0, 0x38, 0xFF), // orange
+            new Color32(0x4A, 0xA6, 0xFF, 0xFF), // blue
+            new Color32(0xFF, 0x62, 0x68, 0xFF), // red
         };
 
-        private static readonly Color NeutralColor = new Color32(0x45, 0x55, 0x78, 0xFF);
-        private static readonly Color HighlightColor = new Color32(0x8C, 0xF5, 0x7A, 0xFF);
-        private static readonly Color BombColor = new Color32(0x2A, 0x1E, 0x2E, 0xFF);
-        private static readonly Color WildcardColor = new Color32(0xFF, 0xC8, 0x3A, 0xFF);
+        private static readonly Color NeutralColor = new Color32(0x72, 0x84, 0xAE, 0xFF);
+        private static readonly Color HighlightColor = new Color32(0xA6, 0xFF, 0x86, 0xFF);
+        private static readonly Color BombColor = new Color32(0x4A, 0x3A, 0x58, 0xFF);
+        private static readonly Color WildcardColor = new Color32(0xFF, 0xD8, 0x4A, 0xFF);
 
         [SerializeField] private Image background;
         [SerializeField] private TMP_Text letterLabel;
@@ -61,15 +65,18 @@ namespace WordDrop.Gameplay.View
 
         public void SetSize(float cellSize)
         {
-            rectTransform.sizeDelta = Vector2.one * (cellSize * 0.92f);
-            letterLabel.fontSize = cellSize * 0.58f;
+            rectTransform.sizeDelta = Vector2.one * (cellSize * 0.94f);
+            letterLabel.fontSize = cellSize * 0.56f;
             SetCornerRadius(background, cellSize * 0.2f);
         }
 
         /// <summary>Keeps a sliced rounded sprite's corners proportional to the tile, at any board size.</summary>
         public static void SetCornerRadius(Image image, float radius)
         {
-            image.pixelsPerUnitMultiplier = image.sprite.border.x / Mathf.Max(radius, 1f);
+            if (image.type == Image.Type.Sliced)
+            {
+                image.pixelsPerUnitMultiplier = image.sprite.border.x / Mathf.Max(radius, 1f);
+            }
         }
 
         public void MoveTo(Vector2 position) => target = position;

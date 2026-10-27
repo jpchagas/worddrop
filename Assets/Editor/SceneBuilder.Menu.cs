@@ -15,7 +15,7 @@ namespace WordDrop.EditorTools
     /// <summary>The MainMenu scene (with How to Play, Daily Challenge, achievements and records) and the LevelMap scene.</summary>
     public static partial class SceneBuilder
     {
-        private static readonly Color ScreenBackground = Hex(0x0E1A35);
+        private static readonly Color ToastBackground = Hex(0x1A2C55);
 
         // ---------------------------------------------------------------- Main menu
 
@@ -126,20 +126,20 @@ namespace WordDrop.EditorTools
 
         private static void StepCard(Transform parent, int number, string title, string text, System.Action<Transform> picture)
         {
-            GameObject card = RoundedPanel($"Step{number}", parent, Card, 1f);
+            GameObject card = CardPanel($"Step{number}", parent);
             Sized(card, 290);
 
-            GameObject badge = RoundedPanel("Badge", card.transform, Green, 0.6f);
+            GameObject badge = TileFace("Badge", card.transform, Green);
             Place(badge, new Vector2(0, 1), new Vector2(70, -70), new Vector2(80, 80));
-            Stretch(Label(badge.transform, "Number", number.ToString(), 44, TextWhite, FontStyles.Bold).rectTransform);
+            TileLetter(Label(badge.transform, "Number", number.ToString(), 44, TextWhite, FontStyles.Bold));
 
             TMP_Text titleLabel = Label(card.transform, "Title", title, 40, TextWhite, FontStyles.Bold, TextAlignmentOptions.Left);
-            Place(titleLabel.gameObject, new Vector2(0, 1), new Vector2(390, -70), new Vector2(560, 60));
+            Place(titleLabel.gameObject, new Vector2(0, 1), new Vector2(415, -70), new Vector2(550, 60));
             TMP_Text body = Label(card.transform, "Text", text, 29, TextMuted, FontStyles.Normal, TextAlignmentOptions.TopLeft);
             body.enableAutoSizing = true;
             body.fontSizeMin = 20;
             body.fontSizeMax = 29;
-            Place(body.gameObject, new Vector2(0, 1), new Vector2(390, -185), new Vector2(560, 160));
+            Place(body.gameObject, new Vector2(0, 1), new Vector2(415, -185), new Vector2(550, 160));
 
             GameObject art = Child("Picture", card.transform);
             Place(art, new Vector2(1, 0.5f), new Vector2(-150, 0), new Vector2(240, 240));
@@ -159,9 +159,9 @@ namespace WordDrop.EditorTools
 
                 float offset = (i - (letters.Length - 1) / 2f) * (size + 6f);
                 Color color = highlight ? WordGreen : Gameplay.View.TileView.ColorForHint(hints[i]);
-                GameObject tile = RoundedPanel("Tile", parent, color, 3f);
+                GameObject tile = TileFace("Tile", parent, color);
                 Place(tile, new Vector2(0.5f, 0.5f), vertical ? new Vector2(0, -offset) : new Vector2(offset, 0), new Vector2(size, size));
-                Stretch(Label(tile.transform, "Letter", letters[i].ToString(), size * 0.62f, TextWhite, FontStyles.Bold).rectTransform);
+                TileLetter(Label(tile.transform, "Letter", letters[i].ToString(), size * 0.6f, TextWhite, FontStyles.Bold));
             }
         }
 
@@ -175,7 +175,7 @@ namespace WordDrop.EditorTools
             Sized(date, 80);
             Sized(Label(content, "Goal", Strings.DailyGoal, 34, TextMuted), 60);
 
-            GameObject card = RoundedPanel("ResultCard", content, Card, 1f);
+            GameObject card = CardPanel("ResultCard", content);
             Sized(card, 420);
             // Shown once today's challenge is completed: a green check and "Desafio concluído!".
             GameObject doneGroup = Child("Done", card.transform);
@@ -221,7 +221,7 @@ namespace WordDrop.EditorTools
 
             RectTransform list = ScrollList(content, top: 80);
 
-            GameObject statsCard = RoundedPanel("Stats", list, TrackDark, 1f);
+            GameObject statsCard = RoundedPanel("Stats", list, Inset, 1f);
             Sized(statsCard, 400);
             TMP_Text statsTitle = Label(statsCard.transform, "Title", Strings.Statistics, 40, TextWhite, FontStyles.Bold);
             Place(statsTitle.gameObject, new Vector2(0.5f, 1), new Vector2(0, -45), new Vector2(800, 60));
@@ -245,7 +245,7 @@ namespace WordDrop.EditorTools
 
         private static AchievementRow AchievementRowView(Transform parent, int index)
         {
-            GameObject go = RoundedPanel($"Achievement{index + 1}", parent, Card, 1f);
+            GameObject go = CardPanel($"Achievement{index + 1}", parent);
             Sized(go, 180);
 
             TMP_Text title = Label(go.transform, "Title", "Conquista", 38, TextWhite, FontStyles.Bold, TextAlignmentOptions.Left);
@@ -347,8 +347,7 @@ namespace WordDrop.EditorTools
                 var shadow = node.AddComponent<Shadow>();
                 shadow.effectColor = new Color(0, 0, 0, 0.35f);
                 shadow.effectDistance = new Vector2(0, -8);
-                var button = node.AddComponent<Button>();
-                button.targetGraphic = node.GetComponent<Image>();
+                Button button = MakeClickable(node);
                 var colors = button.colors;
                 colors.disabledColor = new Color(0.55f, 0.55f, 0.6f, 1f);
                 button.colors = colors;
@@ -393,13 +392,14 @@ namespace WordDrop.EditorTools
         {
             GameObject root = Child(name, parent, typeof(Image));
             Stretch((RectTransform)root.transform);
-            root.GetComponent<Image>().color = ScreenBackground;
+            root.GetComponent<Image>().sprite = gradient;
 
             Header(root.transform, title, out back);
 
             GameObject body = Child("Content", root.transform);
             content = (RectTransform)body.transform;
             Stretch(content, 40, 40, 40, 200);
+            AddPopIn(root, body, startScale: 0.96f);
             return root;
         }
 
@@ -408,11 +408,12 @@ namespace WordDrop.EditorTools
             TMP_Text label = Label(parent, "Title", title, 58, TextWhite, FontStyles.Bold);
             Place(label.gameObject, new Vector2(0.5f, 1), new Vector2(0, -95), new Vector2(760, 90));
 
-            GameObject backButton = RoundedPanel("BackButton", parent, Secondary, 0.9f);
-            Place(backButton, new Vector2(0, 1), new Vector2(90, -95), new Vector2(110, 110));
-            back = backButton.AddComponent<Button>();
-            back.targetGraphic = backButton.GetComponent<Image>();
-            Stretch(Label(backButton.transform, "Arrow", "<", 60, TextWhite, FontStyles.Bold).rectTransform);
+            const float size = 110f;
+            GameObject backButton = ButtonFace("BackButton", parent, Secondary, size);
+            Place(backButton, new Vector2(0, 1), new Vector2(90, -95), new Vector2(size, size));
+            back = MakeClickable(backButton);
+            Stretch(Label(backButton.transform, "Arrow", "<", 60, TextWhite, FontStyles.Bold).rectTransform,
+                0, ButtonLipHeight(size), 0, 0);
         }
 
         /// <summary>A vertical scrolling list filling <paramref name="parent"/> below <paramref name="top"/>; returns where items go.</summary>
@@ -443,7 +444,7 @@ namespace WordDrop.EditorTools
         /// <param name="top">True to show it under the top bar (in the game, where the bottom is busy).</param>
         private static Toast BuildToast(Transform parent, bool top = false)
         {
-            GameObject root = RoundedPanel("Toast", parent, TrackDark, 1f);
+            GameObject root = CardPanel("Toast", parent, ToastBackground);
             Place(root, new Vector2(0.5f, top ? 1f : 0f), new Vector2(0, top ? -320 : 230), new Vector2(940, 120));
             var group = root.AddComponent<CanvasGroup>();
             group.alpha = 0f;

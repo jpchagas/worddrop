@@ -109,6 +109,7 @@ namespace WordDrop.Tests
             yield return LoadGame(GameMode.Campaign, 0);
             var controller = Object.FindFirstObjectByType<GameController>();
             Assert.AreEqual(GameController.State.Ready, controller.CurrentState, "The briefing waits for 'Começar'.");
+            yield return WaitForPopIn();
             Capture("Game_Briefing");
 
             controller.StartLevel();
@@ -286,24 +287,24 @@ namespace WordDrop.Tests
 
             var daily = Object.FindFirstObjectByType<Screens.DailyChallengePanel>(FindObjectsInactive.Include);
             daily.Open();
-            yield return null;
+            yield return WaitForPopIn();
             Capture("Menu_Daily");
             daily.Close();
 
             var achievements = Object.FindFirstObjectByType<Screens.AchievementsPanel>(FindObjectsInactive.Include);
             achievements.Open();
-            yield return null;
+            yield return WaitForPopIn();
             Capture("Menu_Achievements");
             achievements.Close();
 
             var records = Object.FindFirstObjectByType<Screens.LeaderboardPanel>(FindObjectsInactive.Include);
             records.Open();
-            yield return null;
+            yield return WaitForPopIn();
             Capture("Menu_Leaderboards");
             records.Close();
 
             Object.FindFirstObjectByType<Screens.MainMenuScreen>().OpenHowToPlay();
-            yield return null;
+            yield return WaitForPopIn();
             Capture("Menu_HowToPlay");
         }
 
@@ -379,9 +380,15 @@ namespace WordDrop.Tests
 
             Time.timeScale = 1f;
             Assert.IsTrue(controller.HasEnded, "The run did not finish in time.");
-            yield return new WaitForSeconds(0.3f);
+            yield return WaitForPopIn();
             Capture(screenshotPrefix + "_End");
             Debug.Log($"[Word Drop] {screenshotPrefix}: dropped {dropped} pieces, ended in {controller.CurrentState} with {controller.Score} points.");
+        }
+
+        /// <summary>Panels play a short entrance (UI.PopIn); screenshots wait for it to finish.</summary>
+        private static IEnumerator WaitForPopIn()
+        {
+            yield return new WaitForSecondsRealtime(0.4f);
         }
 
         private static void Capture(string fileName)
