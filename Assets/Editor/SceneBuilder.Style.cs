@@ -29,6 +29,8 @@ namespace WordDrop.EditorTools
         private const string SoftShadowSpritePath = UiArtFolder + "/soft_shadow.png";
         private const string GlowSpritePath = UiArtFolder + "/glow.png";
         private const string WellSpritePath = UiArtFolder + "/well.png";
+        private const string NodeSpritePath = UiArtFolder + "/node.png";
+        private const string FoliageSpritePath = UiArtFolder + "/foliage.png";
 
         // Baked into the font atlas so common text never waits for a glyph at runtime.
         private const string FontCharacters =
@@ -49,6 +51,8 @@ namespace WordDrop.EditorTools
         private static Sprite softShadow;
         private static Sprite glow;
         private static Sprite well;
+        private static Sprite node;
+        private static Sprite foliage;
 
         private static void LoadStyle()
         {
@@ -63,6 +67,8 @@ namespace WordDrop.EditorTools
             softShadow = LoadSprite(SoftShadowSpritePath);
             glow = LoadSprite(GlowSpritePath);
             well = LoadSprite(WellSpritePath);
+            node = LoadSprite(NodeSpritePath);
+            foliage = LoadSprite(FoliageSpritePath);
         }
 
         /// <summary>
@@ -223,7 +229,109 @@ namespace WordDrop.EditorTools
                 return (shade, Coverage(distance));
             });
 
+            // Node: a round glossy button (level map), lip at the bottom like the tiles.
+            const int n = 192;
+            const float nodeLip = 16f;
+            WriteShadedSprite(n, n, NodeSpritePath, Vector4.zero, (x, y) =>
+            {
+                float r = n / 2f;
+                float outer = Coverage(Vector2.Distance(new Vector2(x, y), new Vector2(r, r)) - r);
+                float faceDistance = Vector2.Distance(new Vector2(x, y), new Vector2(r, r + nodeLip / 2f)) - (r - nodeLip / 2f);
+                float face = Coverage(faceDistance);
+                float shade = Mathf.Lerp(0.8f, 0.96f, Mathf.InverseLerp(nodeLip, n, y));
+                float gloss = Coverage(Vector2.Distance(new Vector2(x, (y - n * 0.7f) * 1.9f + n * 0.7f), new Vector2(r, n * 0.7f)) - r * 0.62f);
+                shade = Mathf.Lerp(shade, 1f, gloss * 0.7f);
+                if (faceDistance > -4f)
+                {
+                    shade *= 0.9f;
+                }
+
+                return (Mathf.Lerp(0.56f, shade, face), outer);
+            });
+
+            CreateFoliageSprite();
             CreateBackgroundSprite();
+        }
+
+        /// <summary>
+        /// Jungle foliage for the bottom of the menus (from screens_draft.png):
+        /// leaves fanning up from both corners, lower in the middle, with a
+        /// purple swoosh behind them. In full color, so the Image stays white.
+        /// </summary>
+        private static void CreateFoliageSprite()
+        {
+            const int w = 720;
+            const int h = 280;
+            var random = new System.Random(11);
+            float Range(float a, float b) => a + (float)random.NextDouble() * (b - a);
+
+            Color[] layers = { Hex(0x123F45), Hex(0x1C6A43), Hex(0x0E3326) };
+            var leaves = new List<(Vector2 basePoint, Vector2 dir, float length, float width, float bend, Color color)>();
+            for (int layer = 0; layer < layers.Length; layer++)
+            {
+                for (int i = 0; i < 16; i++)
+                {
+                    // Mostly near the corners; the middle stays low so buttons and text stay clear.
+                    bool left = i % 2 == 0;
+                    float edge = Mathf.Pow(Range(0f, 1f), 1.6f) * w * 0.55f;
+                    float x = left ? edge : w - edge;
+                    float nearCorner = 1f - edge / (w * 0.55f);
+                    float angle = (left ? Range(35f, 100f) : Range(80f, 145f)) * Mathf.Deg2Rad;
+                    float length = Range(70f, 120f) + nearCorner * Range(60f, 150f) - layer * 15f;
+                    Color color = Color.Lerp(layers[layer], Color.black, Range(0f, 0.25f));
+                    leaves.Add((new Vector2(x, Range(-20f, 10f)), new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)),
+                        length, length * Range(0.16f, 0.24f), Range(-0.25f, 0.25f), color));
+                }
+            }
+
+            Color purple = Hex(0x4A2577);
+            var texture = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    var p = new Vector2(x + 0.5f, y + 0.5f);
+                    var color = new Color(0f, 0f, 0f, 0f);
+
+                    // Purple swoosh: a wide arc rising from the bottom left.
+                    float arc = Vector2.Distance(p, new Vector2(w * 0.05f, -h * 1.1f)) - h * 1.45f;
+                    float swoosh = Mathf.Clamp01(Mathf.Min(0.5f - arc, 0.5f + arc + 46f)) * Mathf.Clamp01(1.2f - x / (w * 0.6f));
+                    color = Color.Lerp(color, purple, swoosh);
+
+                    foreach (var leaf in leaves)
+                    {
+                        Vector2 d = p - leaf.basePoint;
+                        float u = Vector2.Dot(d, leaf.dir);
+                        if (u <= 0f || u >= leaf.length)
+                        {
+                            continue;
+                        }
+
+                        float t = u / leaf.length;
+                        float v = Vector2.Dot(d, new Vector2(-leaf.dir.y, leaf.dir.x)) - leaf.bend * t * t * leaf.length;
+                        float half = leaf.width * Mathf.Pow(Mathf.Sin(Mathf.PI * t), 0.8f);
+                        float inside = Mathf.Clamp01(half - Mathf.Abs(v) + 0.5f);
+                        if (inside <= 0f)
+                        {
+                            continue;
+                        }
+
+                        // Lighter toward the tip, with a pale midrib.
+                        Color shade = Color.Lerp(leaf.color, leaf.color * 1.35f, t);
+                        if (Mathf.Abs(v) < 1.4f && t < 0.9f)
+                        {
+                            shade = Color.Lerp(shade, Color.white, 0.18f);
+                        }
+
+                        shade.a = 1f;
+                        color = Color.Lerp(color, shade, inside);
+                    }
+
+                    texture.SetPixel(x, y, color);
+                }
+            }
+
+            WriteSprite(texture, FoliageSpritePath, Vector4.zero);
         }
 
         /// <summary>

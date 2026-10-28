@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEditor.Events;
@@ -16,6 +17,11 @@ namespace WordDrop.EditorTools
     public static partial class SceneBuilder
     {
         private static readonly Color ToastBackground = Hex(0x1A2C55);
+        private static readonly Color DailyColor = Hex(0xF39A1E);
+        private static readonly Color HowToColor = Hex(0x3D8BEA);
+        private static readonly Color AchievementsColor = Hex(0x9B59F0);
+        private static readonly Color RecordsColor = Hex(0xEF5468);
+        private static readonly Color PathBed = Hex(0x0F1C40);
 
         // ---------------------------------------------------------------- Main menu
 
@@ -29,23 +35,41 @@ namespace WordDrop.EditorTools
             music.GetComponent<AudioSource>().playOnAwake = false;
             music.AddComponent<MusicPlayer>();
 
-            Logo(ui.Safe, new Vector2(0, -330), 600);
+            Foliage(ui.Safe);
+            GameObject decor = Child("FloatingTiles", ui.Safe);
+            Stretch((RectTransform)decor.transform);
+            // Dimmer tiles low among the leaves first, then the bright ones around the logo.
+            FloatingTile(decor.transform, "E", 4, new Vector2(0, 0), new Vector2(150, 330), 100, -14, 0.6f);
+            FloatingTile(decor.transform, "O", 2, new Vector2(1, 0), new Vector2(-150, 380), 90, 12, 0.6f);
+            FloatingTile(decor.transform, "W", 1, new Vector2(0, 1), new Vector2(130, -150), 150, -12, 1f);
+            FloatingTile(decor.transform, "R", 2, new Vector2(1, 1), new Vector2(-125, -235), 140, 14, 1f);
+            FloatingTile(decor.transform, "A", 3, new Vector2(0, 1), new Vector2(100, -560), 120, 10, 0.9f);
+            FloatingTile(decor.transform, "D", 5, new Vector2(1, 1), new Vector2(-105, -540), 110, -10, 0.9f);
+
+            Logo(ui.Safe, new Vector2(0, -400), 700);
+
+            const float settingsSize = 110f;
+            GameObject settingsFace = ButtonFace("SettingsButton", ui.Safe, Secondary, settingsSize);
+            Place(settingsFace, new Vector2(1, 1), new Vector2(-90, -95), new Vector2(settingsSize, settingsSize));
+            Button settings = MakeClickable(settingsFace);
+            ButtonIcon(settingsFace, GearIconPath, settingsSize, 64, 0);
 
             GameObject column = Child("Buttons", ui.Safe);
-            Place(column, new Vector2(0.5f, 0.5f), new Vector2(0, -360), new Vector2(820, 760));
-            VerticalStack(column, padding: 0, spacing: 22);
+            Place(column, new Vector2(0.5f, 0.5f), new Vector2(0, -110), new Vector2(820, 760));
 
-            Button play = PrimaryButton(column.transform, "PlayButton", Strings.Play, 150, 60, out TMP_Text playLabel);
-            Button endless = SecondaryButton(column.transform, "EndlessButton", Strings.Endless, 120, out _);
+            Button play = PrimaryButton(column.transform, "PlayButton", Strings.Play, 170, 62, out TMP_Text playLabel);
+            Place(play.gameObject, new Vector2(0.5f, 0.5f), new Vector2(0, 210), new Vector2(820, 170));
+            ButtonIcon(play.gameObject, PlayIconPath, 170, 64, 90);
+            Button endless = SecondaryButton(column.transform, "EndlessButton", Strings.Endless, 130, out _);
+            Place(endless.gameObject, new Vector2(0.5f, 0.5f), new Vector2(0, 40), new Vector2(820, 130));
+            ButtonIcon(endless.gameObject, InfinityIconPath, 130, 64, 85);
             TMP_Text endlessBest = Label(column.transform, "EndlessBest", "", 30, TextMuted);
-            Sized(endlessBest, 34);
-            GameObject row1 = ButtonRow(column.transform, "Row1", 110);
-            Button daily = SecondaryButton(row1.transform, "DailyChallengeButton", Strings.DailyChallenge, 110, out _);
-            Button howTo = SecondaryButton(row1.transform, "HowToPlayButton", Strings.HowToPlay, 110, out _);
-            GameObject row2 = ButtonRow(column.transform, "Row2", 110);
-            Button achievements = SecondaryButton(row2.transform, "AchievementsButton", Strings.Achievements, 110, out _);
-            Button records = SecondaryButton(row2.transform, "LeaderboardsButton", Strings.Leaderboards, 110, out _);
-            Button settings = SecondaryButton(column.transform, "SettingsButton", Strings.Settings, 110, out _);
+            Place(endlessBest.gameObject, new Vector2(0.5f, 0.5f), new Vector2(0, -55), new Vector2(820, 40));
+
+            Button daily = MenuTile(column.transform, "DailyChallengeButton", Strings.DailyChallenge, CalendarIconPath, DailyColor, new Vector2(-306, -220));
+            Button howTo = MenuTile(column.transform, "HowToPlayButton", Strings.HowToPlay, QuestionIconPath, HowToColor, new Vector2(-102, -220));
+            Button achievements = MenuTile(column.transform, "AchievementsButton", Strings.Achievements, TrophyIconPath, AchievementsColor, new Vector2(102, -220));
+            Button records = MenuTile(column.transform, "LeaderboardsButton", Strings.Leaderboards, PodiumIconPath, RecordsColor, new Vector2(306, -220));
 
             TMP_Text credits = Label(ui.Safe, "Credits", Strings.Credits, 26, TextMuted);
             Place(credits.gameObject, new Vector2(0.5f, 0f), new Vector2(0, 50), new Vector2(1000, 50));
@@ -290,26 +314,38 @@ namespace WordDrop.EditorTools
 
         // ---------------------------------------------------------------- Level map
 
-        /// <summary>World 1 as a winding path of level nodes, level 1 at the bottom (GDD 7.1, item 7).</summary>
+        /// <summary>
+        /// World 1 as a winding road of level nodes, level 1 at the bottom (GDD 7.1,
+        /// item 7). LevelMapScreen colors the nodes and path, and puts the glow
+        /// and the pin on the current level.
+        /// </summary>
         private static void BuildLevelMap()
         {
             var ui = NewUiScene(GradientBottom, useGradient: true);
             var screen = new GameObject("LevelMapScreen").AddComponent<LevelMapScreen>();
             Sprite star = LoadSprite(StarSpritePath);
+            Foliage(ui.Safe);
 
             Header(ui.Safe, Strings.LevelMap, out Button back);
-            TMP_Text world = Label(ui.Safe, "World", Strings.World1, 34, Yellow, FontStyles.Bold);
-            Place(world.gameObject, new Vector2(0.5f, 1), new Vector2(0, -160), new Vector2(900, 50));
+            GameObject worldBadge = CardPanel("WorldBadge", ui.Safe, Inset);
+            Place(worldBadge, new Vector2(0.5f, 1), new Vector2(0, -170), new Vector2(640, 64));
+            TMP_Text world = Label(worldBadge.transform, "World", Strings.World1, 32, Yellow, FontStyles.Bold);
+            world.enableAutoSizing = true;
+            world.fontSizeMin = 20;
+            world.fontSizeMax = 32;
+            world.textWrappingMode = TextWrappingModes.NoWrap;
+            Stretch(world.rectTransform, 24, 0, 24, 0);
 
             GameObject scrollObject = Child("Scroll", ui.Safe, typeof(Image), typeof(RectMask2D));
-            Stretch((RectTransform)scrollObject.transform, 0, 0, 0, 200);
+            Stretch((RectTransform)scrollObject.transform, 0, 0, 0, 215);
             scrollObject.GetComponent<Image>().color = Color.clear;
             GameObject contentObject = Child("Content", scrollObject.transform);
             var content = (RectTransform)contentObject.transform;
 
             const int count = GameSession.CampaignLevelCount;
-            const float spacing = 240f;
-            const float bottomMargin = 220f;
+            const float spacing = 300f;
+            const float bottomMargin = 270f;
+            const float nodeSize = 180f;
             float height = bottomMargin * 2 + spacing * (count - 1);
             content.anchorMin = new Vector2(0, 1);
             content.anchorMax = new Vector2(1, 1);
@@ -323,69 +359,222 @@ namespace WordDrop.EditorTools
             scroll.horizontal = false;
             scroll.scrollSensitivity = 40;
 
-            var nodes = new Button[count];
-            var stars = new Image[count * 3];
-            Vector2 previous = Vector2.zero;
-            // Path dots get their own layer, created first, so they stay behind every node and its stars.
-            GameObject dots = Child("Path", content);
-            Stretch((RectTransform)dots.transform);
+            var positions = new Vector2[count];
             for (int i = 0; i < count; i++)
             {
-                var position = new Vector2(Mathf.Sin(i * 0.95f) * 230f, -(height - bottomMargin - i * spacing));
+                positions[i] = new Vector2(Mathf.Sin(i * 0.95f) * 240f, -(height - bottomMargin - i * spacing));
+            }
 
-                if (i > 0)
-                {
-                    for (int d = 1; d <= 3; d++)
-                    {
-                        GameObject dot = RoundedPanel("PathDot", dots.transform, new Color(1f, 1f, 1f, 0.25f), 3f);
-                        Place(dot, new Vector2(0.5f, 1), Vector2.Lerp(previous, position, d / 4f), new Vector2(26, 26));
-                    }
-                }
+            // Layers, back to front: road bed, road dots, current-level glow, nodes, pin.
+            BuildMapPath(content, positions, out Image[] pathDots, out int[] pathDotLevels);
 
-                GameObject node = RoundedPanel($"Level{i + 1}", content, Green, 0.56f);
-                Place(node, new Vector2(0.5f, 1), position, new Vector2(170, 170));
-                var shadow = node.AddComponent<Shadow>();
-                shadow.effectColor = new Color(0, 0, 0, 0.35f);
-                shadow.effectDistance = new Vector2(0, -8);
-                Button button = MakeClickable(node);
-                var colors = button.colors;
-                colors.disabledColor = new Color(0.55f, 0.55f, 0.6f, 1f);
+            GameObject glowObject = Child("CurrentGlow", content, typeof(Image));
+            Place(glowObject, new Vector2(0.5f, 1), Vector2.zero, new Vector2(330, 330));
+            var glowImage = glowObject.GetComponent<Image>();
+            glowImage.sprite = glow;
+            glowImage.color = new Color(1f, 0.78f, 0.25f, 0.55f);
+            glowImage.raycastTarget = false;
+
+            var nodes = new Button[count];
+            var stars = new Image[count * 3];
+            var numbers = new GameObject[count];
+            var locks = new GameObject[count];
+            float lip = nodeSize * 16f / 192f;
+            for (int i = 0; i < count; i++)
+            {
+                GameObject nodeObject = Child($"Level{i + 1}", content, typeof(Image));
+                Place(nodeObject, new Vector2(0.5f, 1), positions[i], new Vector2(nodeSize, nodeSize));
+                nodeObject.GetComponent<Image>().sprite = node;
+                nodeObject.GetComponent<Image>().color = Green; // LevelMapScreen sets the real state color.
+                Button button = MakeClickable(nodeObject);
+                ColorBlock colors = button.colors;
+                colors.disabledColor = Color.white; // LevelMapScreen gives locked nodes their own color.
                 button.colors = colors;
-                Stretch(Label(node.transform, "Number", (i + 1).ToString(), 64, TextWhite, FontStyles.Bold).rectTransform);
                 UnityEventTools.AddIntPersistentListener(button.onClick, screen.PlayLevel, i);
                 nodes[i] = button;
 
+                TMP_Text number = Label(nodeObject.transform, "Number", (i + 1).ToString(), 72, TextWhite, FontStyles.Bold);
+                Stretch(number.rectTransform, 0, lip, 0, 0);
+                numbers[i] = number.gameObject;
+
+                GameObject lockIcon = Child("Lock", nodeObject.transform, typeof(Image));
+                Place(lockIcon, new Vector2(0.5f, 0.5f), new Vector2(0, lip / 2f), new Vector2(72, 72));
+                var lockImage = lockIcon.GetComponent<Image>();
+                lockImage.sprite = LoadSprite(LockIconPath);
+                lockImage.color = new Color(1f, 1f, 1f, 0.7f);
+                lockImage.raycastTarget = false;
+                locks[i] = lockIcon;
+
+                // Stars on a small arc under the node.
                 for (int s = 0; s < 3; s++)
                 {
-                    stars[i * 3 + s] = StarImage(node.transform, $"Star{s + 1}", star, new Vector2(0.5f, 0f),
-                        new Vector2((s - 1) * 48, -30 + (s == 1 ? -6 : 0)), 44);
+                    stars[i * 3 + s] = StarImage(nodeObject.transform, $"Star{s + 1}", star, new Vector2(0.5f, 0.5f),
+                        new Vector2((s - 1) * 54, s == 1 ? -128 : -116), s == 1 ? 52 : 46);
                 }
-
-                previous = position;
             }
+
+            GameObject marker = Child("Marker", content, typeof(Image));
+            Place(marker, new Vector2(0.5f, 1), Vector2.zero, new Vector2(96, 96));
+            var markerImage = marker.GetComponent<Image>();
+            markerImage.sprite = LoadSprite(PinIconPath);
+            markerImage.color = Yellow;
+            markerImage.raycastTarget = false;
+            var markerShadow = marker.AddComponent<Shadow>();
+            markerShadow.effectColor = new Color(0f, 0f, 0f, 0.4f);
+            markerShadow.effectDistance = new Vector2(0, -6);
 
             WireArray(screen, "nodes", nodes);
             WireArray(screen, "stars", stars);
+            WireArray(screen, "numberLabels", numbers);
+            WireArray(screen, "lockIcons", locks);
+            WireArray(screen, "pathDots", pathDots);
+            var serialized = new SerializedObject(screen);
+            SerializedProperty levels = serialized.FindProperty("pathDotLevels");
+            levels.arraySize = pathDotLevels.Length;
+            for (int i = 0; i < pathDotLevels.Length; i++)
+            {
+                levels.GetArrayElementAtIndex(i).intValue = pathDotLevels[i];
+            }
+
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            Wire(screen, "marker", marker.transform);
+            Wire(screen, "currentGlow", glowImage);
             Wire(screen, "scrollRect", scroll);
             OnClick(back, screen.Back);
 
             Save(ui.Scene, SceneNames.LevelMap);
         }
 
-        // ---------------------------------------------------------------- Helpers
-
-        private static GameObject ButtonRow(Transform parent, string name, float height)
+        /// <summary>
+        /// The road between level nodes: a smooth curve through them, drawn as a
+        /// solid bed with dots on it. Dots near a node are left out, so they
+        /// never touch the node or its stars.
+        /// </summary>
+        private static void BuildMapPath(Transform content, Vector2[] nodes, out Image[] dots, out int[] dotLevels)
         {
-            GameObject row = Child(name, parent);
-            Sized(row, height);
-            var layout = row.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = 22;
-            layout.childControlWidth = true;
-            layout.childControlHeight = true;
-            layout.childForceExpandWidth = true;
-            layout.childForceExpandHeight = true;
-            return row;
+            GameObject bedLayer = Child("PathBed", content);
+            Stretch((RectTransform)bedLayer.transform);
+            GameObject dotLayer = Child("PathDots", content);
+            Stretch((RectTransform)dotLayer.transform);
+
+            const float bedStep = 12f;
+            const float dotStep = 44f;
+            const float clearance = 140f;
+            var dotList = new List<Image>();
+            var levelList = new List<int>();
+            for (int i = 0; i + 1 < nodes.Length; i++)
+            {
+                Vector2 p0 = nodes[Mathf.Max(i - 1, 0)];
+                Vector2 p1 = nodes[i];
+                Vector2 p2 = nodes[i + 1];
+                Vector2 p3 = nodes[Mathf.Min(i + 2, nodes.Length - 1)];
+
+                float sinceBed = bedStep;
+                float sinceDot = dotStep / 2f;
+                Vector2 previous = p1;
+                for (int k = 1; k <= 200; k++)
+                {
+                    Vector2 point = CatmullRom(p0, p1, p2, p3, k / 200f);
+                    float step = Vector2.Distance(previous, point);
+                    previous = point;
+                    sinceBed += step;
+                    sinceDot += step;
+
+                    if (sinceBed >= bedStep)
+                    {
+                        sinceBed = 0f;
+                        GameObject bed = RoundedPanel("Bed", bedLayer.transform, PathBed, 3f);
+                        Place(bed, new Vector2(0.5f, 1), point, new Vector2(64, 64));
+                        bed.GetComponent<Image>().raycastTarget = false;
+                    }
+
+                    bool nearNode = Vector2.Distance(point, p1) < clearance || Vector2.Distance(point, p2) < clearance;
+                    if (sinceDot >= dotStep && !nearNode)
+                    {
+                        sinceDot = 0f;
+                        GameObject dot = RoundedPanel("Dot", dotLayer.transform, Color.white, 3f);
+                        Place(dot, new Vector2(0.5f, 1), point, new Vector2(24, 24));
+                        var image = dot.GetComponent<Image>();
+                        image.raycastTarget = false;
+                        dotList.Add(image);
+                        levelList.Add(i + 2); // This stretch leads to level i + 2.
+                    }
+                }
+            }
+
+            dots = dotList.ToArray();
+            dotLevels = levelList.ToArray();
         }
+
+        private static Vector2 CatmullRom(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, float t)
+        {
+            float t2 = t * t;
+            float t3 = t2 * t;
+            return 0.5f * (2f * p1 + (p2 - p0) * t + (2f * p0 - 5f * p1 + 4f * p2 - p3) * t2 + (3f * p1 - p0 - 3f * p2 + p3) * t3);
+        }
+
+        // ---------------------------------------------------------------- Menu decor
+
+        /// <summary>Jungle foliage along the bottom of the screen, behind everything in the safe area.</summary>
+        private static void Foliage(Transform safe)
+        {
+            GameObject go = Child("Foliage", safe.parent, typeof(Image));
+            go.transform.SetSiblingIndex(safe.GetSiblingIndex()); // Just under the safe area, above the background.
+            var rect = (RectTransform)go.transform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = new Vector2(1, 0);
+            rect.pivot = new Vector2(0.5f, 0);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = new Vector2(0, 420); // The sprite's 720×280 shape at the 1080 reference width.
+            var image = go.GetComponent<Image>();
+            image.sprite = foliage;
+            image.raycastTarget = false;
+        }
+
+        /// <summary>A decorative letter tile that bobs and sways; <paramref name="alpha"/> below 1 pushes it into the distance.</summary>
+        private static void FloatingTile(Transform parent, string letter, int hint, Vector2 anchor, Vector2 position, float size,
+            float angle, float alpha)
+        {
+            GameObject tile = TileFace($"Tile{letter}", parent, Gameplay.View.TileView.ColorForHint(hint));
+            Place(tile, anchor, position, new Vector2(size, size));
+            tile.transform.localRotation = Quaternion.Euler(0f, 0f, angle);
+            TMP_Text label = Label(tile.transform, "Letter", letter, size * 0.56f, TextWhite, FontStyles.Bold);
+            TileLetter(label);
+            tile.AddComponent<CanvasGroup>().alpha = alpha;
+            tile.AddComponent<Drift>();
+        }
+
+        /// <summary>A white icon on a button face, raised above its lip: centered when <paramref name="x"/> is 0, otherwise that far from the left edge.</summary>
+        private static Image ButtonIcon(GameObject face, string iconPath, float height, float size, float x)
+        {
+            GameObject icon = Child("Icon", face.transform, typeof(Image));
+            Place(icon, new Vector2(x == 0f ? 0.5f : 0f, 0.5f), new Vector2(x, ButtonLipHeight(height) / 2f), new Vector2(size, size));
+            var image = icon.GetComponent<Image>();
+            image.sprite = LoadSprite(iconPath);
+            image.preserveAspect = true;
+            image.raycastTarget = false;
+            return image;
+        }
+
+        /// <summary>A square, colorful 3D menu button with a big icon and a caption under it.</summary>
+        private static Button MenuTile(Transform parent, string name, string caption, string iconPath, Color color, Vector2 position)
+        {
+            const float size = 170f;
+            GameObject face = ButtonFace(name, parent, color, size);
+            Place(face, new Vector2(0.5f, 0.5f), position, new Vector2(size, size));
+            Button button = MakeClickable(face);
+            ButtonIcon(face, iconPath, size, 92, 0);
+
+            TMP_Text label = Label(parent, name + "Caption", caption, 30, TextWhite, FontStyles.Bold);
+            label.enableAutoSizing = true;
+            label.fontSizeMin = 18;
+            label.fontSizeMax = 30;
+            label.textWrappingMode = TextWrappingModes.NoWrap;
+            Place(label.gameObject, new Vector2(0.5f, 0.5f), position + new Vector2(0, -size / 2f - 34), new Vector2(200, 44));
+            return button;
+        }
+
+        // ---------------------------------------------------------------- Helpers
 
         /// <summary>A full-screen page with a title and a back button; children go in <paramref name="content"/>.</summary>
         private static GameObject ScreenPanel(string name, Transform parent, string title, out RectTransform content, out Button back)
