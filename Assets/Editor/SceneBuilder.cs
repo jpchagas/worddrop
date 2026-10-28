@@ -290,6 +290,13 @@ namespace WordDrop.EditorTools
             return button;
         }
 
+        /// <summary>Adds an icon at the left of a button made by <see cref="MakeButton"/>; the label stays centered.</summary>
+        private static Button WithIcon(Button button, string iconPath, float height)
+        {
+            ButtonIcon(button.gameObject, iconPath, height, height * 0.42f, height * 0.5f);
+            return button;
+        }
+
         /// <summary>The 3D button shape (glossy face over a darker lip), sized for <paramref name="height"/>.</summary>
         private static GameObject ButtonFace(string name, Transform parent, Color color, float height)
         {

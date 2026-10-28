@@ -107,11 +107,11 @@ namespace WordDrop.EditorTools
             ((VerticalLayoutGroup)card.GetComponent<LayoutGroup>()).spacing = 24;
 
             Sized(Label(card.transform, "Title", Strings.Settings, 64, TextWhite, FontStyles.Bold), 100);
-            Button music = SecondaryButton(card.transform, "MusicToggle", Strings.MusicOn, 110, out TMP_Text musicLabel);
-            Button sound = SecondaryButton(card.transform, "SoundToggle", Strings.SoundOn, 110, out TMP_Text soundLabel);
-            Button vibration = SecondaryButton(card.transform, "VibrationToggle", Strings.VibrationOn, 110, out TMP_Text vibrationLabel);
-            terms = SecondaryButton(card.transform, "TermsButton", Strings.TermsOfUse, 110, out _);
-            privacy = SecondaryButton(card.transform, "PrivacyButton", Strings.PrivacyPolicy, 110, out _);
+            Button music = WithIcon(SecondaryButton(card.transform, "MusicToggle", Strings.MusicOn, 110, out TMP_Text musicLabel), MusicIconPath, 110);
+            Button sound = WithIcon(SecondaryButton(card.transform, "SoundToggle", Strings.SoundOn, 110, out TMP_Text soundLabel), SoundIconPath, 110);
+            Button vibration = WithIcon(SecondaryButton(card.transform, "VibrationToggle", Strings.VibrationOn, 110, out TMP_Text vibrationLabel), VibrationIconPath, 110);
+            terms = WithIcon(SecondaryButton(card.transform, "TermsButton", Strings.TermsOfUse, 110, out _), BookIconPath, 110);
+            privacy = WithIcon(SecondaryButton(card.transform, "PrivacyButton", Strings.PrivacyPolicy, 110, out _), BookIconPath, 110);
             Button close = PrimaryButton(card.transform, "CloseButton", Strings.Close, 130, 52, out _);
 
             Wire(screen, "musicToggleLabel", musicLabel);
@@ -153,9 +153,14 @@ namespace WordDrop.EditorTools
             GameObject card = CardPanel($"Step{number}", parent);
             Sized(card, 290);
 
-            GameObject badge = TileFace("Badge", card.transform, Green);
-            Place(badge, new Vector2(0, 1), new Vector2(70, -70), new Vector2(80, 80));
-            TileLetter(Label(badge.transform, "Number", number.ToString(), 44, TextWhite, FontStyles.Bold));
+            // A round green badge, like the level map's nodes.
+            GameObject badge = Child("Badge", card.transform, typeof(Image));
+            Place(badge, new Vector2(0, 1), new Vector2(70, -70), new Vector2(84, 84));
+            var badgeImage = badge.GetComponent<Image>();
+            badgeImage.sprite = node;
+            badgeImage.color = Green;
+            badgeImage.raycastTarget = false;
+            Stretch(Label(badge.transform, "Number", number.ToString(), 44, TextWhite, FontStyles.Bold).rectTransform, 0, 84f * 16f / 192f, 0, 0);
 
             TMP_Text titleLabel = Label(card.transform, "Title", title, 40, TextWhite, FontStyles.Bold, TextAlignmentOptions.Left);
             Place(titleLabel.gameObject, new Vector2(0, 1), new Vector2(415, -70), new Vector2(550, 60));
@@ -168,6 +173,28 @@ namespace WordDrop.EditorTools
             GameObject art = Child("Picture", card.transform);
             Place(art, new Vector2(1, 0.5f), new Vector2(-150, 0), new Vector2(240, 240));
             picture(art.transform);
+        }
+
+        /// <summary>A few rows of colorful tiles settled at the bottom of a mini board, as an illustration.</summary>
+        private static void MiniBoard(Transform board)
+        {
+            string[] rows = { "PALAVRAS", "S.O.L.MA", "..R..E.." };
+            const float size = 46f;
+            for (int row = 0; row < rows.Length; row++)
+            {
+                for (int col = 0; col < rows[row].Length; col++)
+                {
+                    char letter = rows[row][col];
+                    if (letter == '.')
+                    {
+                        continue;
+                    }
+
+                    GameObject tile = TileFace("Tile", board, Gameplay.View.TileView.ColorForHint((row * 3 + col) % 6));
+                    Place(tile, new Vector2(0.5f, 0), new Vector2((col - 3.5f) * (size + 2f), 22f + size / 2f + row * (size + 2f)), new Vector2(size, size));
+                    TileLetter(Label(tile.transform, "Letter", letter.ToString(), size * 0.58f, TextWhite, FontStyles.Bold));
+                }
+            }
         }
 
         /// <summary>A few small tiles for illustrations; a space leaves a gap, hint 0 is the neutral color.</summary>
@@ -195,27 +222,51 @@ namespace WordDrop.EditorTools
             GameObject root = ScreenPanel("DailyPanel", parent, Strings.DailyChallenge, out RectTransform content, out Button back);
             VerticalStack(content.gameObject, padding: 20, spacing: 28);
 
-            TMP_Text date = Label(content, "Date", "22 de outubro de 2026", 50, TextWhite, FontStyles.Bold);
-            Sized(date, 80);
-            Sized(Label(content, "Goal", Strings.DailyGoal, 34, TextMuted), 60);
+            // Date next to an orange calendar tile.
+            GameObject dateRow = Child("DateRow", content);
+            Sized(dateRow, 110);
+            GameObject calendar = ButtonFace("Calendar", dateRow.transform, DailyColor, 100);
+            Place(calendar, new Vector2(0.5f, 0.5f), new Vector2(-330, 0), new Vector2(100, 100));
+            calendar.GetComponent<Image>().raycastTarget = false;
+            ButtonIcon(calendar, CalendarIconPath, 100, 58, 0);
+            TMP_Text date = Label(dateRow.transform, "Date", "22 de outubro de 2026", 50, TextWhite, FontStyles.Bold, TextAlignmentOptions.Left);
+            date.enableAutoSizing = true;
+            date.fontSizeMin = 30;
+            date.fontSizeMax = 50;
+            date.textWrappingMode = TextWrappingModes.NoWrap;
+            Place(date.gameObject, new Vector2(0.5f, 0.5f), new Vector2(70, 0), new Vector2(640, 90));
+            Sized(Label(content, "Goal", Strings.DailyGoal, 34, TextMuted), 56);
 
             GameObject card = CardPanel("ResultCard", content);
-            Sized(card, 420);
-            // Shown once today's challenge is completed: a green check and "Desafio concluído!".
+            Sized(card, 520);
+            // A little board with today's letters; a check badge covers it once the challenge is completed.
+            GameObject board = Well("MiniBoard", card.transform);
+            Place(board, new Vector2(0.5f, 1), new Vector2(0, -185), new Vector2(420, 290));
+            MiniBoard(board.transform);
             GameObject doneGroup = Child("Done", card.transform);
             Stretch((RectTransform)doneGroup.transform);
-            GameObject badge = RoundedPanel("Badge", doneGroup.transform, Green, 0.5f);
-            Place(badge, new Vector2(0.5f, 1), new Vector2(0, -130), new Vector2(160, 160));
+            GameObject dim = Child("Dim", doneGroup.transform, typeof(Image));
+            Place(dim, new Vector2(0.5f, 1), new Vector2(0, -185), new Vector2(420, 290));
+            dim.GetComponent<Image>().sprite = well;
+            dim.GetComponent<Image>().type = Image.Type.Sliced;
+            dim.GetComponent<Image>().color = Hex(0x0A1430, 0.65f);
+            GameObject badge = Child("Badge", doneGroup.transform, typeof(Image));
+            Place(badge, new Vector2(0.5f, 1), new Vector2(0, -175), new Vector2(170, 170));
+            badge.GetComponent<Image>().sprite = node;
+            badge.GetComponent<Image>().color = Green;
             GameObject check = Child("Check", badge.transform, typeof(Image));
-            Stretch((RectTransform)check.transform, 28, 28, 28, 28);
+            Stretch((RectTransform)check.transform, 36, 40, 36, 30);
             check.GetComponent<Image>().sprite = LoadSprite(CheckIconPath);
             TMP_Text done = Label(doneGroup.transform, "Label", Strings.DailyDone, 40, TextWhite, FontStyles.Bold);
-            Place(done.gameObject, new Vector2(0.5f, 1), new Vector2(0, -255), new Vector2(800, 60));
-            TMP_Text status = Label(card.transform, "Status", Strings.DailyNotPlayed, 38, TextWhite);
-            Place(status.gameObject, new Vector2(0.5f, 0), new Vector2(0, 70), new Vector2(820, 80));
+            Place(done.gameObject, new Vector2(0.5f, 0), new Vector2(0, 135), new Vector2(800, 60));
+            TMP_Text status = Label(card.transform, "Status", Strings.DailyNotPlayed, 36, TextWhite);
+            status.enableAutoSizing = true;
+            status.fontSizeMin = 22;
+            status.fontSizeMax = 36;
+            Place(status.gameObject, new Vector2(0.5f, 0), new Vector2(0, 60), new Vector2(820, 70));
 
-            Button play = PrimaryButton(content, "PlayButton", Strings.Play, 150, 60, out _);
-            Button claim = SecondaryButton(content, "ClaimButton", Strings.ClaimReward, 130, out TMP_Text claimLabel);
+            Button play = WithIcon(PrimaryButton(content, "PlayButton", Strings.Play, 150, 60, out _), PlayIconPath, 150);
+            Button claim = WithIcon(SecondaryButton(content, "ClaimButton", Strings.ClaimReward, 130, out TMP_Text claimLabel), GiftIconPath, 130);
 
             var panel = root.AddComponent<DailyChallengePanel>();
             Wire(panel, "dailyRules", AssetDatabase.LoadAssetAtPath<LevelDefinition>(LevelCatalog.DailyPath));
@@ -518,8 +569,14 @@ namespace WordDrop.EditorTools
         /// <summary>Jungle foliage along the bottom of the screen, behind everything in the safe area.</summary>
         private static void Foliage(Transform safe)
         {
-            GameObject go = Child("Foliage", safe.parent, typeof(Image));
+            GameObject go = FoliageStrip(safe.parent);
             go.transform.SetSiblingIndex(safe.GetSiblingIndex()); // Just under the safe area, above the background.
+        }
+
+        /// <summary>Jungle foliage along the bottom of <paramref name="parent"/>.</summary>
+        private static GameObject FoliageStrip(Transform parent)
+        {
+            GameObject go = Child("Foliage", parent, typeof(Image));
             var rect = (RectTransform)go.transform;
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = new Vector2(1, 0);
@@ -529,6 +586,7 @@ namespace WordDrop.EditorTools
             var image = go.GetComponent<Image>();
             image.sprite = foliage;
             image.raycastTarget = false;
+            return go;
         }
 
         /// <summary>A decorative letter tile that bobs and sways; <paramref name="alpha"/> below 1 pushes it into the distance.</summary>
@@ -582,6 +640,7 @@ namespace WordDrop.EditorTools
             GameObject root = Child(name, parent, typeof(Image));
             Stretch((RectTransform)root.transform);
             root.GetComponent<Image>().sprite = gradient;
+            FoliageStrip(root.transform);
 
             Header(root.transform, title, out back);
 

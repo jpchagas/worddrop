@@ -31,6 +31,7 @@ namespace WordDrop.EditorTools
         private const string WellSpritePath = UiArtFolder + "/well.png";
         private const string NodeSpritePath = UiArtFolder + "/node.png";
         private const string FoliageSpritePath = UiArtFolder + "/foliage.png";
+        private const string RaysSpritePath = UiArtFolder + "/rays.png";
 
         // Baked into the font atlas so common text never waits for a glyph at runtime.
         private const string FontCharacters =
@@ -53,6 +54,7 @@ namespace WordDrop.EditorTools
         private static Sprite well;
         private static Sprite node;
         private static Sprite foliage;
+        private static Sprite rays;
 
         private static void LoadStyle()
         {
@@ -69,6 +71,7 @@ namespace WordDrop.EditorTools
             well = LoadSprite(WellSpritePath);
             node = LoadSprite(NodeSpritePath);
             foliage = LoadSprite(FoliageSpritePath);
+            rays = LoadSprite(RaysSpritePath);
         }
 
         /// <summary>
@@ -247,6 +250,17 @@ namespace WordDrop.EditorTools
                 }
 
                 return (Mathf.Lerp(0.56f, shade, face), outer);
+            });
+
+            // Rays: a sunburst of 12 soft beams fading outward, for behind earned stars.
+            const int rs = 256;
+            WriteShadedSprite(rs, rs, RaysSpritePath, Vector4.zero, (x, y) =>
+            {
+                Vector2 d = new Vector2(x - rs / 2f, y - rs / 2f);
+                float distance = d.magnitude / (rs / 2f);
+                float beam = Mathf.Cos(Mathf.Atan2(d.y, d.x) * 12f) * 0.5f + 0.5f;
+                beam = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.45f, 0.75f, beam));
+                return (1f, beam * Mathf.Clamp01(1f - distance) * Mathf.Clamp01(distance * 4f));
             });
 
             CreateFoliageSprite();

@@ -11,7 +11,8 @@ namespace WordDrop.Gameplay.View
 {
     /// <summary>
     /// "Nível concluído!" panel: stars, objective status, score, best score and
-    /// the words found (GDD 7.1). Earned stars slam down one by one after the panel opens.
+    /// the words found (GDD 7.1). Earned stars slam down one by one after the
+    /// panel opens, each with a chime and a burst of confetti.
     /// </summary>
     public class LevelCompletePanel : MonoBehaviour
     {
@@ -26,6 +27,8 @@ namespace WordDrop.Gameplay.View
         [SerializeField] private Color starOn = new Color32(0xFF, 0xC8, 0x3A, 0xFF);
         [SerializeField] private Color starOff = new Color(1f, 1f, 1f, 0.15f);
         [SerializeField] private SoundEffects sounds;
+        [Tooltip("Laid out over the stars' parent, so star positions are its coordinates.")]
+        [SerializeField] private UiParticles confetti;
         [SerializeField] private float firstStarDelay = 0.35f;
         [SerializeField] private float starInterval = 0.45f;
 
@@ -67,6 +70,13 @@ namespace WordDrop.Gameplay.View
                 }
 
                 stars[i].transform.localScale = Vector3.one;
+                Vector2 position = stars[i].rectTransform.anchoredPosition;
+                confetti.Burst(position, starOn, 1.4f, chunks: 4, sparks: 4);
+                for (int c = 1; c <= 3; c++)
+                {
+                    confetti.Burst(position, TileView.ColorForHint(Random.Range(1, 6)), 1.2f, chunks: 4, sparks: 0);
+                }
+
                 yield return new WaitForSecondsRealtime(starInterval - seconds);
             }
         }

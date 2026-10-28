@@ -6,8 +6,9 @@ namespace WordDrop.EditorTools
 {
     /// <summary>
     /// Simple white icons drawn in code (tinted by the Image color): boosters,
-    /// menu buttons (play, infinity, calendar, question, trophy, podium, gear)
-    /// and the level map (lock, pin).
+    /// menu buttons (play, infinity, calendar, question, trophy, podium, gear),
+    /// the level map (lock, pin) and panel buttons (home, restart, book, music,
+    /// sound, vibration, gift).
     /// </summary>
     public static partial class SceneBuilder
     {
@@ -23,6 +24,13 @@ namespace WordDrop.EditorTools
         private const string GearIconPath = UiArtFolder + "/icon_gear.png";
         private const string LockIconPath = UiArtFolder + "/icon_lock.png";
         private const string PinIconPath = UiArtFolder + "/icon_pin.png";
+        private const string HomeIconPath = UiArtFolder + "/icon_home.png";
+        private const string RestartIconPath = UiArtFolder + "/icon_restart.png";
+        private const string BookIconPath = UiArtFolder + "/icon_book.png";
+        private const string MusicIconPath = UiArtFolder + "/icon_music.png";
+        private const string SoundIconPath = UiArtFolder + "/icon_sound.png";
+        private const string VibrationIconPath = UiArtFolder + "/icon_vibration.png";
+        private const string GiftIconPath = UiArtFolder + "/icon_gift.png";
 
         private const int IconSize = 128;
 
@@ -124,6 +132,68 @@ namespace WordDrop.EditorTools
             // Map pin: a round head tapering to a point, with a hole.
             WriteIcon(PinIconPath, (x, y) =>
                 Mathf.Min(Mathf.Max(Circle(x, y, 64, 82, 40), Triangle(x, y, 30, 64, 98, 64, 64, 4)), 1f - Circle(x, y, 64, 82, 16)));
+
+            // Home: a roof over a house with a door.
+            WriteIcon(HomeIconPath, (x, y) =>
+                Mathf.Min(Mathf.Max(Triangle(x, y, 8, 62, 120, 62, 64, 116), Box(x, y, 24, 10, 104, 70, 8)),
+                    1f - Box(x, y, 52, 4, 76, 46, 6)));
+
+            // Restart: an almost-closed circle ending in an arrowhead at the top.
+            WriteIcon(RestartIconPath, (x, y) =>
+            {
+                float angle = Mathf.Atan2(y - 62, x - 64) * Mathf.Rad2Deg;
+                float arc = angle > 62f && angle < 112f ? 0f : Ring(x, y, 64, 62, 38, 10);
+                return Mathf.Max(arc, Triangle(x, y, 96, 116, 70, 74, 60, 106));
+            });
+
+            // Book: two open pages with lines.
+            WriteIcon(BookIconPath, (x, y) =>
+            {
+                float pages = Mathf.Max(Box(x, y, 8, 18, 60, 108, 8), Box(x, y, 68, 18, 120, 108, 8));
+                float lines = 0f;
+                foreach (float lineY in new[] { 44f, 64f, 84f })
+                {
+                    lines = Mathf.Max(lines, Segment(x, y, 20, lineY, 48, lineY, 3), Segment(x, y, 80, lineY, 108, lineY, 3));
+                }
+
+                return Mathf.Min(pages, 1f - lines);
+            });
+
+            // Music: two beamed notes.
+            WriteIcon(MusicIconPath, (x, y) =>
+                Mathf.Max(Circle(x, y, 42, 30, 18), Circle(x, y, 94, 42, 18),
+                    Mathf.Max(Segment(x, y, 56, 30, 56, 106, 6), Segment(x, y, 108, 42, 108, 118, 6)),
+                    Segment(x, y, 56, 104, 108, 116, 10)));
+
+            // Sound: a speaker with two waves.
+            WriteIcon(SoundIconPath, (x, y) =>
+            {
+                float speaker = Mathf.Max(Box(x, y, 10, 44, 42, 84, 5),
+                    Mathf.Max(Triangle(x, y, 34, 44, 70, 112, 70, 16), Triangle(x, y, 34, 44, 34, 84, 70, 112)));
+                float angle = Mathf.Abs(Mathf.Atan2(y - 64, x - 72) * Mathf.Rad2Deg);
+                float waves = angle < 48f ? Mathf.Max(Ring(x, y, 72, 64, 24, 6), Ring(x, y, 72, 64, 46, 6)) : 0f;
+                return Mathf.Max(speaker, waves);
+            });
+
+            // Vibration: a phone outline with buzz lines either side.
+            WriteIcon(VibrationIconPath, (x, y) =>
+            {
+                float phone = Mathf.Min(Box(x, y, 40, 10, 88, 118, 12), 1f - Box(x, y, 49, 24, 79, 102, 4));
+                float buzz = Mathf.Max(
+                    Mathf.Max(Segment(x, y, 26, 40, 16, 52, 4), Segment(x, y, 16, 52, 26, 64, 4), Segment(x, y, 26, 64, 16, 76, 4), Segment(x, y, 16, 76, 26, 88, 4)),
+                    Mathf.Max(Segment(x, y, 102, 40, 112, 52, 4), Segment(x, y, 112, 52, 102, 64, 4), Segment(x, y, 102, 64, 112, 76, 4), Segment(x, y, 112, 76, 102, 88, 4)));
+                return Mathf.Max(phone, buzz);
+            });
+
+            // Gift: a box and lid split by a ribbon, with a bow on top.
+            WriteIcon(GiftIconPath, (x, y) =>
+            {
+                float box = Mathf.Max(Box(x, y, 18, 8, 110, 66, 6), Box(x, y, 10, 70, 118, 92, 6));
+                box = Mathf.Min(box, 1f - Box(x, y, 59, 0, 69, 92, 0));
+                float bow = Mathf.Min(Mathf.Max(Circle(x, y, 46, 106, 15), Circle(x, y, 82, 106, 15)),
+                    1f - Mathf.Max(Circle(x, y, 46, 106, 6), Circle(x, y, 82, 106, 6)));
+                return Mathf.Max(box, bow);
+            });
         }
 
         private static void WriteIcon(string path, Func<float, float, float> coverage)

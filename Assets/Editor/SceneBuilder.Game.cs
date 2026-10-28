@@ -24,6 +24,9 @@ namespace WordDrop.EditorTools
         private static readonly Color HudCard = Hex(0x0B1736, 0.75f);
         private static readonly Color WordGreen = Hex(0x5BE06A);
         private static readonly Color BannerBackground = Hex(0x1A2F60, 0.96f);
+        private static readonly Color Divider = Hex(0x22386A);
+        private static readonly Color RecordBadge = Hex(0xFFC83A);
+        private static readonly Color RecordText = Hex(0x3A2400);
 
         // Board frame, per side: the lit bezel, then padding inside the well.
         private const float BoardBezel = 12f;
@@ -307,22 +310,28 @@ namespace WordDrop.EditorTools
 
         private static LevelBriefingPanel BuildBriefingPanel(Transform parent, GameController controller)
         {
-            GameObject root = ModalCard("BriefingPanel", parent, new Vector2(880, 1000), out GameObject card);
+            GameObject root = ModalCard("BriefingPanel", parent, new Vector2(880, 900), out GameObject card);
+            ((VerticalLayoutGroup)card.GetComponent<LayoutGroup>()).spacing = 26;
 
             TMP_Text title = Label(card.transform, "Title", string.Format(Strings.LevelFormat, 1), 72, TextWhite, FontStyles.Bold);
             Sized(title, 100);
-            Sized(Label(card.transform, "ObjectiveHeading", Strings.Objective, 34, Yellow, FontStyles.Bold), 50);
-            TMP_Text objective = Label(card.transform, "Objective", string.Format(Strings.ObjectiveScore, "500"), 44, TextWhite, FontStyles.Bold);
+
+            GameObject goal = CardPanel("ObjectiveCard", card.transform, Inset);
+            Sized(goal, 230);
+            TMP_Text heading = Label(goal.transform, "ObjectiveHeading", Strings.Objective, 32, Yellow, FontStyles.Bold);
+            Place(heading.gameObject, new Vector2(0.5f, 1), new Vector2(0, -45), new Vector2(700, 50));
+            TMP_Text objective = Label(goal.transform, "Objective", string.Format(Strings.ObjectiveScore, "500"), 44, TextWhite, FontStyles.Bold);
             objective.enableAutoSizing = true;
-            objective.fontSizeMin = 26;
+            objective.fontSizeMin = 24;
             objective.fontSizeMax = 44;
-            Sized(objective, 170);
-            TMP_Text tip = Label(card.transform, "Tip", "", 34, TextMuted);
+            Stretch(objective.rectTransform, 30, 20, 30, 80);
+
+            TMP_Text tip = Label(card.transform, "Tip", "", 32, TextMuted, FontStyles.Italic);
             tip.enableAutoSizing = true;
             tip.fontSizeMin = 22;
-            tip.fontSizeMax = 34;
-            Sized(tip, 260);
-            Button start = PrimaryButton(card.transform, "StartButton", Strings.Start, 150, 60, out _);
+            tip.fontSizeMax = 32;
+            Sized(tip, 220);
+            Button start = WithIcon(PrimaryButton(card.transform, "StartButton", Strings.Start, 150, 60, out _), PlayIconPath, 150);
             OnClick(start, controller.StartLevel);
 
             var panel = root.AddComponent<LevelBriefingPanel>();
@@ -339,11 +348,11 @@ namespace WordDrop.EditorTools
             GameObject root = ModalCard("PausePanel", parent, new Vector2(860, 1000), out GameObject card);
 
             Sized(Label(card.transform, "Title", Strings.Paused, 64, TextWhite, FontStyles.Bold), 100);
-            Button resume = PrimaryButton(card.transform, "ResumeButton", Strings.Resume, 140, 56, out _);
-            Button restart = SecondaryButton(card.transform, "RestartButton", Strings.RestartLevel, 120, out _);
-            Button music = SecondaryButton(card.transform, "MusicToggle", Strings.MusicOn, 120, out musicLabel);
-            Button sound = SecondaryButton(card.transform, "SoundToggle", Strings.SoundOn, 120, out soundLabel);
-            Button menu = SecondaryButton(card.transform, "ExitButton", Strings.MainMenu, 120, out exitLabel);
+            Button resume = WithIcon(PrimaryButton(card.transform, "ResumeButton", Strings.Resume, 140, 56, out _), PlayIconPath, 140);
+            Button restart = WithIcon(SecondaryButton(card.transform, "RestartButton", Strings.RestartLevel, 120, out _), RestartIconPath, 120);
+            Button music = WithIcon(SecondaryButton(card.transform, "MusicToggle", Strings.MusicOn, 120, out musicLabel), MusicIconPath, 120);
+            Button sound = WithIcon(SecondaryButton(card.transform, "SoundToggle", Strings.SoundOn, 120, out soundLabel), SoundIconPath, 120);
+            Button menu = WithIcon(SecondaryButton(card.transform, "ExitButton", Strings.MainMenu, 120, out exitLabel), HomeIconPath, 120);
 
             OnClick(resume, controller.Resume);
             OnClick(restart, controller.RequestRestart);
@@ -375,43 +384,57 @@ namespace WordDrop.EditorTools
         private static LevelCompletePanel BuildLevelCompletePanel(Transform parent, Sprite star, GameController controller,
             out TMP_Text exitLabel)
         {
-            GameObject root = ModalCard("LevelCompletePanel", parent, new Vector2(900, 1620), out GameObject card);
-            ((VerticalLayoutGroup)card.GetComponent<LayoutGroup>()).spacing = 22;
+            GameObject root = ModalCard("LevelCompletePanel", parent, new Vector2(900, 1500), out GameObject card);
+            ((VerticalLayoutGroup)card.GetComponent<LayoutGroup>()).spacing = 20;
 
-            TMP_Text title = Label(card.transform, "Title", Strings.LevelComplete, 72, TextWhite, FontStyles.Bold);
-            Sized(title, 100);
-            TMP_Text objective = Label(card.transform, "ObjectiveStatus", Strings.ObjectiveDone, 32, TextMuted);
-            objective.enableAutoSizing = true;
-            objective.fontSizeMin = 20;
-            objective.fontSizeMax = 32;
-            Sized(objective, 90);
-
+            // Stars on a slowly turning sunburst; confetti bursts from each star as it lands.
             GameObject starRow = Child("Stars", card.transform);
-            Sized(starRow, 200);
+            Sized(starRow, 230);
+            GameObject burst = Child("Rays", starRow.transform, typeof(Image));
+            Place(burst, new Vector2(0.5f, 0.5f), new Vector2(0, 0), new Vector2(620, 620));
+            var burstImage = burst.GetComponent<Image>();
+            burstImage.sprite = rays;
+            burstImage.color = new Color(1f, 0.85f, 0.4f, 0.22f);
+            burstImage.raycastTarget = false;
+            burst.AddComponent<Spin>();
+            GameObject halo = Child("Glow", starRow.transform, typeof(Image));
+            Place(halo, new Vector2(0.5f, 0.5f), new Vector2(0, 0), new Vector2(520, 360));
+            var haloImage = halo.GetComponent<Image>();
+            haloImage.sprite = glow;
+            haloImage.color = new Color(1f, 0.75f, 0.25f, 0.35f);
+            haloImage.raycastTarget = false;
             var stars = new[]
             {
                 StarImage(starRow.transform, "Star1", star, new Vector2(0.5f, 0.5f), new Vector2(-210, -20), 150),
                 StarImage(starRow.transform, "Star2", star, new Vector2(0.5f, 0.5f), new Vector2(0, 10), 190),
                 StarImage(starRow.transform, "Star3", star, new Vector2(0.5f, 0.5f), new Vector2(210, -20), 150),
             };
+            GameObject confettiLayer = Child("Confetti", starRow.transform);
+            Stretch((RectTransform)confettiLayer.transform);
+            var confetti = confettiLayer.AddComponent<UiParticles>();
+            Wire(confetti, "chunkSprite", tileSprite);
+            Wire(confetti, "sparkSprite", glow);
 
-            GameObject stats = RoundedPanel("Stats", card.transform, Inset, 1f);
-            Sized(stats, 270);
-            VerticalStack(stats, padding: 25, spacing: 8);
-            TMP_Text score = StatRow(stats.transform, "ScoreRow", Strings.Score, TextWhite);
-            TMP_Text best = StatRow(stats.transform, "BestRow", Strings.Best, Yellow);
-            TMP_Text count = StatRow(stats.transform, "WordsRow", Strings.WordsFoundCount, TextWhite);
+            TMP_Text title = Label(card.transform, "Title", Strings.LevelComplete, 72, TextWhite, FontStyles.Bold);
+            Sized(title, 96);
+            TMP_Text objective = Label(card.transform, "ObjectiveStatus", Strings.ObjectiveDone, 32, TextMuted);
+            objective.enableAutoSizing = true;
+            objective.fontSizeMin = 20;
+            objective.fontSizeMax = 32;
+            Sized(objective, 70);
+
+            ScoreColumns(card.transform, out TMP_Text score, out TMP_Text best, out TMP_Text count, withWords: true);
 
             TMP_Text wordList = Label(card.transform, "WordList", "SOL · MAR", 34, WordGreen, FontStyles.Bold);
             wordList.enableAutoSizing = true;
             wordList.fontSizeMin = 18;
             wordList.fontSizeMax = 34;
-            Sized(wordList, 100);
+            Sized(wordList, 80);
 
-            Button next = PrimaryButton(card.transform, "NextLevelButton", Strings.NextLevel, 140, 56, out _);
-            Button meanings = SecondaryButton(card.transform, "MeaningsButton", Strings.Meanings, 110, out _);
-            Button again = SecondaryButton(card.transform, "PlayAgainButton", Strings.PlayAgain, 110, out _);
-            Button menu = SecondaryButton(card.transform, "ExitButton", Strings.MainMenu, 110, out exitLabel);
+            Button next = WithIcon(PrimaryButton(card.transform, "NextLevelButton", Strings.NextLevel, 140, 56, out _), PlayIconPath, 140);
+            Button meanings = WithIcon(SecondaryButton(card.transform, "MeaningsButton", Strings.Meanings, 110, out _), BookIconPath, 110);
+            Button again = WithIcon(SecondaryButton(card.transform, "PlayAgainButton", Strings.PlayAgain, 110, out _), RestartIconPath, 110);
+            Button menu = WithIcon(SecondaryButton(card.transform, "ExitButton", Strings.MainMenu, 110, out exitLabel), HomeIconPath, 110);
 
             OnClick(next, controller.NextLevel);
             OnClick(meanings, controller.ShowMeanings);
@@ -421,6 +444,7 @@ namespace WordDrop.EditorTools
             var panel = root.AddComponent<LevelCompletePanel>();
             Wire(panel, "titleLabel", title);
             WireArray(panel, "stars", stars);
+            Wire(panel, "confetti", confetti);
             Wire(panel, "objectiveLabel", objective);
             Wire(panel, "scoreLabel", score);
             Wire(panel, "bestLabel", best);
@@ -434,24 +458,28 @@ namespace WordDrop.EditorTools
 
         private static GameOverPanel BuildGameOverPanel(Transform parent, GameController controller, out TMP_Text exitLabel)
         {
-            GameObject root = ModalCard("GameOverPanel", parent, new Vector2(860, 1180), out GameObject card);
+            GameObject root = ModalCard("GameOverPanel", parent, new Vector2(860, 1060), out GameObject card);
             ((VerticalLayoutGroup)card.GetComponent<LayoutGroup>()).spacing = 22;
 
             Sized(Label(card.transform, "Title", Strings.GameOver, 72, TextWhite, FontStyles.Bold), 100);
-            TMP_Text reason = Label(card.transform, "Reason", Strings.BoardFull, 38, TextMuted);
-            Sized(reason, 130);
+            TMP_Text reason = Label(card.transform, "Reason", Strings.BoardFull, 36, TextMuted);
+            Sized(reason, 100);
 
-            GameObject stats = RoundedPanel("Stats", card.transform, Inset, 1f);
-            Sized(stats, 220);
-            VerticalStack(stats, padding: 30, spacing: 10);
-            TMP_Text score = StatRow(stats.transform, "ScoreRow", Strings.Score, TextWhite);
-            TMP_Text best = StatRow(stats.transform, "BestRow", Strings.Best, Yellow);
+            ScoreColumns(card.transform, out TMP_Text score, out TMP_Text best, out _, withWords: false);
 
-            TMP_Text record = Label(card.transform, "NewRecord", Strings.NewRecord, 48, Yellow, FontStyles.Bold);
-            Sized(record, 60);
-            Button again = PrimaryButton(card.transform, "TryAgainButton", Strings.TryAgain, 140, 56, out _);
-            Button meanings = SecondaryButton(card.transform, "MeaningsButton", Strings.Meanings, 110, out _);
-            Button menu = SecondaryButton(card.transform, "ExitButton", Strings.MainMenu, 110, out exitLabel);
+            // "Novo recorde!" on a gold badge, centered in its row.
+            GameObject recordRow = Child("NewRecord", card.transform);
+            Sized(recordRow, 76);
+            GameObject badge = ButtonFace("Badge", recordRow.transform, RecordBadge, 76);
+            Place(badge, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(440, 76));
+            badge.GetComponent<Image>().raycastTarget = false;
+            TMP_Text record = Label(badge.transform, "Label", Strings.NewRecord, 40, RecordText, FontStyles.Bold);
+            record.fontSharedMaterial = boldFont.material; // No soft shadow on the light badge.
+            Stretch(record.rectTransform, 0, ButtonLipHeight(76), 0, 0);
+
+            Button again = WithIcon(PrimaryButton(card.transform, "TryAgainButton", Strings.TryAgain, 140, 56, out _), RestartIconPath, 140);
+            Button meanings = WithIcon(SecondaryButton(card.transform, "MeaningsButton", Strings.Meanings, 110, out _), BookIconPath, 110);
+            Button menu = WithIcon(SecondaryButton(card.transform, "ExitButton", Strings.MainMenu, 110, out exitLabel), HomeIconPath, 110);
 
             OnClick(again, controller.Restart);
             OnClick(meanings, controller.ShowMeanings);
@@ -461,9 +489,57 @@ namespace WordDrop.EditorTools
             Wire(panel, "reasonLabel", reason);
             Wire(panel, "scoreLabel", score);
             Wire(panel, "bestLabel", best);
-            Wire(panel, "newRecordLabel", record.gameObject);
+            Wire(panel, "newRecordLabel", recordRow);
             root.SetActive(false);
             return panel;
+        }
+
+        /// <summary>
+        /// Result stats (from the mockup): score and best side by side, and
+        /// optionally the number of words found on a row under them.
+        /// </summary>
+        private static void ScoreColumns(Transform parent, out TMP_Text score, out TMP_Text best, out TMP_Text words, bool withWords)
+        {
+            GameObject stats = CardPanel("Stats", parent, Inset);
+            Sized(stats, withWords ? 290 : 190);
+
+            score = ScoreColumn(stats.transform, "Score", Strings.Score, TextWhite, 0.25f);
+            best = ScoreColumn(stats.transform, "Best", Strings.Best, Yellow, 0.75f);
+            GameObject split = RoundedPanel("Split", stats.transform, Divider, 4f);
+            Place(split, new Vector2(0.5f, 1), new Vector2(0, -95), new Vector2(4, 130));
+
+            words = null;
+            if (!withWords)
+            {
+                return;
+            }
+
+            GameObject line = RoundedPanel("Line", stats.transform, Divider, 4f);
+            var lineRect = (RectTransform)line.transform;
+            lineRect.anchorMin = new Vector2(0, 1);
+            lineRect.anchorMax = new Vector2(1, 1);
+            lineRect.offsetMin = new Vector2(30, -184);
+            lineRect.offsetMax = new Vector2(-30, -180);
+
+            Image icon = StarImage(stats.transform, "WordsIcon", LoadSprite(StarSpritePath), new Vector2(0, 0), new Vector2(62, 54), 46);
+            icon.color = Yellow;
+            TMP_Text title = Label(stats.transform, "WordsTitle", Strings.WordsFoundCount, 34, TextMuted, FontStyles.Normal, TextAlignmentOptions.Left);
+            Place(title.gameObject, new Vector2(0, 0), new Vector2(355, 54), new Vector2(500, 60));
+            words = Label(stats.transform, "WordsValue", "0", 46, TextWhite, FontStyles.Bold, TextAlignmentOptions.Right);
+            Place(words.gameObject, new Vector2(1, 0), new Vector2(-130, 54), new Vector2(200, 60));
+        }
+
+        private static TMP_Text ScoreColumn(Transform parent, string name, string caption, Color valueColor, float x)
+        {
+            TMP_Text title = Label(parent, name + "Title", caption, 32, TextMuted);
+            Place(title.gameObject, new Vector2(x, 1), new Vector2(0, -50), new Vector2(330, 44));
+            TMP_Text value = Label(parent, name + "Value", "0", 64, valueColor, FontStyles.Bold);
+            value.enableAutoSizing = true;
+            value.fontSizeMin = 36;
+            value.fontSizeMax = 64;
+            value.textWrappingMode = TextWrappingModes.NoWrap;
+            Place(value.gameObject, new Vector2(x, 1), new Vector2(0, -115), new Vector2(330, 80));
+            return value;
         }
 
         /// <summary>Bottom bar (from the mockup): Bomb, Shuffle and Star as 3D buttons, each with a count badge.</summary>
@@ -570,17 +646,6 @@ namespace WordDrop.EditorTools
             image.color = WellColor;
             image.raycastTarget = false;
             return go;
-        }
-
-        private static TMP_Text StatRow(Transform parent, string name, string title, Color valueColor)
-        {
-            GameObject row = Child(name, parent);
-            Sized(row, 70);
-            TMP_Text titleLabel = Label(row.transform, "Title", title, 40, TextMuted, FontStyles.Normal, TextAlignmentOptions.Left);
-            Stretch(titleLabel.rectTransform, 20, 0, 20, 0);
-            TMP_Text value = Label(row.transform, "Value", "0", 46, valueColor, FontStyles.Bold, TextAlignmentOptions.Right);
-            Stretch(value.rectTransform, 20, 0, 20, 0);
-            return value;
         }
 
         private static Image StarImage(Transform parent, string name, Sprite sprite, Vector2 anchor, Vector2 position, float size)
