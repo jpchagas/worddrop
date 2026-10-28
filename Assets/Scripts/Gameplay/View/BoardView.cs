@@ -16,8 +16,10 @@ namespace WordDrop.Gameplay.View
         [SerializeField] private RectTransform slotsRoot;
         [SerializeField] private RectTransform tilesRoot;
         [SerializeField] private Sprite slotSprite;
-        [SerializeField] private Color slotColor = new Color(0.03f, 0.06f, 0.14f, 0.85f);
-        [SerializeField] private Color ghostColor = new Color(1f, 1f, 1f, 0.16f);
+        [Tooltip("Empty cells, even columns. Odd columns use the other shade, so columns read as lanes.")]
+        [SerializeField] private Color slotColor = new Color32(0x1E, 0x34, 0x68, 0xB0);
+        [SerializeField] private Color slotColorAlt = new Color32(0x1E, 0x34, 0x68, 0x60);
+        [SerializeField] private Color ghostColor = new Color32(0x5A, 0x82, 0xD8, 0x70);
 
         private int width;
         private int height;
@@ -44,7 +46,7 @@ namespace WordDrop.Gameplay.View
             {
                 for (int y = 0; y < height; y++)
                 {
-                    slots[x, y] = CreateCellImage($"Slot {x},{y}", slotsRoot, slotColor);
+                    slots[x, y] = CreateCellImage($"Slot {x},{y}", slotsRoot, x % 2 == 0 ? slotColor : slotColorAlt);
                 }
             }
 

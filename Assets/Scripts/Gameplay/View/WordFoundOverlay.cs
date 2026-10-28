@@ -37,7 +37,9 @@ namespace WordDrop.Gameplay.View
 
         private void Update()
         {
-            float blend = 1f - Mathf.Exp(-14f * Time.unscaledDeltaTime);
+            // Leaves faster than it arrives, so it is gone before the next piece spawns.
+            float sharpness = targetAlpha > 0f ? 14f : 30f;
+            float blend = 1f - Mathf.Exp(-sharpness * Time.unscaledDeltaTime);
             group.alpha = Mathf.Lerp(group.alpha, targetAlpha, blend);
             transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, blend);
         }

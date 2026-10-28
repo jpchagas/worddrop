@@ -19,9 +19,15 @@ namespace WordDrop.EditorTools
         private const string TilePrefabPath = "Assets/Prefabs/Tile.prefab";
         private const string WordListPath = "Assets/Content/Words/palavras.txt";
 
-        private static readonly Color BoardBackground = Hex(0x0E1A35);
+        private static readonly Color BoardFrame = Hex(0x34589C);
+        private static readonly Color WellColor = Hex(0x14254F);
+        private static readonly Color HudCard = Hex(0x0B1736, 0.75f);
         private static readonly Color WordGreen = Hex(0x5BE06A);
-        private static readonly Color BannerBackground = Hex(0x0A1226, 0.94f);
+        private static readonly Color BannerBackground = Hex(0x1A2F60, 0.96f);
+
+        // Board frame, per side: the lit bezel, then padding inside the well.
+        private const float BoardBezel = 12f;
+        private const float BoardPadding = 26f;
 
         private static void BuildGame()
         {
@@ -43,18 +49,11 @@ namespace WordDrop.EditorTools
 
             // Play area: catches touches anywhere around the board.
             GameObject playArea = Child("PlayArea", ui.Safe, typeof(Image));
-            Stretch((RectTransform)playArea.transform, 30, 190, 30, 270);
+            Stretch((RectTransform)playArea.transform, 30, 200, 30, 250);
             playArea.GetComponent<Image>().color = Color.clear;
 
-            GameObject board = RoundedPanel("Board", playArea.transform, BoardBackground, 1f);
-            var fitter = board.AddComponent<AspectRatioFitter>();
-            fitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
-            fitter.aspectRatio = (float)levels[0].BoardWidth / levels[0].BoardHeight;
-
-            GameObject slots = Child("Slots", board.transform);
-            Stretch((RectTransform)slots.transform, 16, 16, 16, 16);
-            GameObject tiles = Child("Tiles", board.transform);
-            Stretch((RectTransform)tiles.transform, 16, 16, 16, 16);
+            GameObject board = BuildBoardFrame(playArea.transform, levels[0].BoardWidth, levels[0].BoardHeight,
+                out GameObject slots, out GameObject tiles);
 
             var boardView = board.AddComponent<BoardView>();
             Wire(boardView, "tilePrefab", tilePrefab);
@@ -100,6 +99,42 @@ namespace WordDrop.EditorTools
             Save(ui.Scene, SceneNames.Game);
         }
 
+        /// <summary>
+        /// The board: a soft shadow, a lit frame and a recessed well, with the
+        /// empty-cell slots and the tiles inside. BoardView goes on the returned
+        /// object, which keeps the board's aspect ratio.
+        /// </summary>
+        private static GameObject BuildBoardFrame(Transform parent, int columns, int rows, out GameObject slots, out GameObject tiles)
+        {
+            GameObject board = Child("Board", parent);
+            var fitter = board.AddComponent<AspectRatioFitter>();
+            fitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+            // Cells are about 70 units on a reference phone; the frame adds the same on every side.
+            const float cell = 70f;
+            fitter.aspectRatio = (columns * cell + 2 * BoardPadding) / (rows * cell + 2 * BoardPadding);
+
+            GameObject shadow = SoftShadow(board.transform, Vector2.zero, Vector2.zero, Vector2.zero, alpha: 0.6f);
+            Stretch((RectTransform)shadow.transform, -35, -53, -35, -17);
+
+            GameObject frame = CardPanel("Frame", board.transform, BoardFrame);
+            Stretch((RectTransform)frame.transform);
+            frame.GetComponent<Image>().raycastTarget = false;
+
+            GameObject well = Well("Well", board.transform);
+            Stretch((RectTransform)well.transform, BoardBezel, BoardBezel, BoardBezel, BoardBezel);
+
+            slots = Child("Slots", board.transform);
+            Stretch((RectTransform)slots.transform, BoardPadding, BoardPadding, BoardPadding, BoardPadding);
+            tiles = Child("Tiles", board.transform);
+            Stretch((RectTransform)tiles.transform, BoardPadding, BoardPadding, BoardPadding, BoardPadding);
+            return board;
+        }
+
+        /// <summary>
+        /// Top bar (GDD 7.3) in three parts, sized to fit phones narrower than the
+        /// 1080-unit reference: a score card on the left, level, progress and
+        /// stars in the center, and the next piece and pause on the right.
+        /// </summary>
         private static GameHud BuildHud(Transform parent, Sprite star, TileView tilePrefab, GameController controller,
             out NextPiecePreview nextPreview)
         {
@@ -109,48 +144,66 @@ namespace WordDrop.EditorTools
             rect.anchorMax = new Vector2(1, 1);
             rect.pivot = new Vector2(0.5f, 1);
             rect.anchoredPosition = Vector2.zero;
-            rect.sizeDelta = new Vector2(0, 250);
+            rect.sizeDelta = new Vector2(0, 230);
 
-            // Left: score and a counter (moves left, or speed in Endless). Sizes
-            // leave room for narrow phones, where the canvas can be under 1000 units wide.
-            TMP_Text scoreTitle = Label(root.transform, "ScoreTitle", Strings.Score, 32, TextMuted, FontStyles.Normal, TextAlignmentOptions.Left);
-            Place(scoreTitle.gameObject, new Vector2(0, 1), new Vector2(180, -45), new Vector2(280, 44));
-            TMP_Text score = Label(root.transform, "ScoreLabel", "0", 60, TextWhite, FontStyles.Bold, TextAlignmentOptions.Left);
-            Place(score.gameObject, new Vector2(0, 1), new Vector2(180, -100), new Vector2(280, 70));
-            TMP_Text counter = Label(root.transform, "CounterLabel", "", 30, TextMuted, FontStyles.Normal, TextAlignmentOptions.Left);
-            Place(counter.gameObject, new Vector2(0, 1), new Vector2(180, -165), new Vector2(280, 44));
+            // Left: score, and a counter under it (moves left, or speed in Endless).
+            GameObject scoreCard = CardPanel("ScoreCard", root.transform, HudCard);
+            Place(scoreCard, new Vector2(0, 1), new Vector2(165, -110), new Vector2(270, 190));
+            TMP_Text scoreTitle = Label(scoreCard.transform, "ScoreTitle", Strings.Score, 28, TextMuted);
+            Place(scoreTitle.gameObject, new Vector2(0.5f, 1), new Vector2(0, -36), new Vector2(240, 40));
+            TMP_Text score = Label(scoreCard.transform, "ScoreLabel", "0", 64, TextWhite, FontStyles.Bold);
+            score.enableAutoSizing = true;
+            score.fontSizeMin = 36;
+            score.fontSizeMax = 64;
+            score.textWrappingMode = TextWrappingModes.NoWrap;
+            Place(score.gameObject, new Vector2(0.5f, 1), new Vector2(0, -94), new Vector2(240, 76));
+            TMP_Text counter = Label(scoreCard.transform, "CounterLabel", "", 26, Yellow);
+            counter.enableAutoSizing = true;
+            counter.fontSizeMin = 16;
+            counter.fontSizeMax = 26;
+            Place(counter.gameObject, new Vector2(0.5f, 1), new Vector2(0, -152), new Vector2(240, 36));
 
             // Center: level or mode, objective progress, stars.
-            TMP_Text title = Label(root.transform, "TitleLabel", string.Format(Strings.LevelFormat, 1), 38, TextWhite, FontStyles.Bold);
-            Place(title.gameObject, new Vector2(0.5f, 1), new Vector2(0, -40), new Vector2(300, 50));
+            TMP_Text title = Label(root.transform, "TitleLabel", string.Format(Strings.LevelFormat, 1), 42, TextWhite, FontStyles.Bold);
+            title.enableAutoSizing = true;
+            title.fontSizeMin = 26;
+            title.fontSizeMax = 42;
+            title.textWrappingMode = TextWrappingModes.NoWrap;
+            Place(title.gameObject, new Vector2(0.5f, 1), new Vector2(0, -42), new Vector2(330, 56));
             TMP_Text objective = Label(root.transform, "ObjectiveLabel", "Pontos 0/500", 24, TextMuted);
             objective.enableAutoSizing = true;
             objective.fontSizeMin = 14;
             objective.fontSizeMax = 24;
-            Place(objective.gameObject, new Vector2(0.5f, 1), new Vector2(0, -84), new Vector2(330, 40));
+            Place(objective.gameObject, new Vector2(0.5f, 1), new Vector2(0, -88), new Vector2(330, 36));
 
-            GameObject track = RoundedPanel("ProgressTrack", root.transform, TrackDark, 2.5f);
-            Place(track, new Vector2(0.5f, 1), new Vector2(0, -120), new Vector2(280, 24));
-            GameObject fill = RoundedPanel("ProgressFill", track.transform, Green, 2.5f);
+            GameObject track = RoundedPanel("ProgressTrack", root.transform, TrackDark, 2.2f);
+            Place(track, new Vector2(0.5f, 1), new Vector2(0, -126), new Vector2(300, 30));
+            GameObject fill = RoundedPanel("ProgressFill", track.transform, Green, 2.2f);
             var fillRect = (RectTransform)fill.transform;
             fillRect.anchorMin = Vector2.zero;
             fillRect.anchorMax = new Vector2(0f, 1f);
-            fillRect.offsetMin = fillRect.offsetMax = Vector2.zero;
+            fillRect.offsetMin = new Vector2(3, 3);
+            fillRect.offsetMax = new Vector2(-3, -3);
+            GameObject gloss = RoundedPanel("Gloss", fill.transform, new Color(1f, 1f, 1f, 0.3f), 4f);
+            Stretch((RectTransform)gloss.transform, 6, 12, 6, 3);
+            gloss.GetComponent<Image>().raycastTarget = false;
 
             GameObject starsRoot = Child("Stars", root.transform);
-            Place(starsRoot, new Vector2(0.5f, 1), new Vector2(0, -168), new Vector2(240, 60));
+            Place(starsRoot, new Vector2(0.5f, 1), new Vector2(0, -182), new Vector2(240, 60));
             var stars = new Image[3];
             for (int i = 0; i < stars.Length; i++)
             {
-                stars[i] = StarImage(starsRoot.transform, $"Star{i + 1}", star, new Vector2(0.5f, 0.5f), new Vector2((i - 1) * 72, 0), 56);
+                stars[i] = StarImage(starsRoot.transform, $"Star{i + 1}", star, new Vector2(0.5f, 0.5f), new Vector2((i - 1) * 66, 0), 54);
                 stars[i].color = new Color(1f, 1f, 1f, 0.18f); // Unearned; GameHud lights them up.
             }
 
-            // Right: next piece, then the round pause button.
-            TMP_Text nextLabel = Label(root.transform, "NextLabel", Strings.Next, 28, TextMuted);
-            Place(nextLabel.gameObject, new Vector2(1, 1), new Vector2(-250, -40), new Vector2(160, 40));
-            GameObject nextBox = RoundedPanel("NextPiece", root.transform, TrackDark, 1.5f);
-            Place(nextBox, new Vector2(1, 1), new Vector2(-250, -135), new Vector2(140, 140));
+            // Right: the next piece in a small card, then the pause button.
+            GameObject nextCard = CardPanel("NextCard", root.transform, HudCard);
+            Place(nextCard, new Vector2(1, 1), new Vector2(-230, -110), new Vector2(150, 190));
+            TMP_Text nextLabel = Label(nextCard.transform, "NextLabel", Strings.Next, 24, TextMuted);
+            Place(nextLabel.gameObject, new Vector2(0.5f, 1), new Vector2(0, -30), new Vector2(140, 36));
+            GameObject nextBox = Well("NextPiece", nextCard.transform);
+            Stretch((RectTransform)nextBox.transform, 12, 12, 12, 54);
             GameObject nextTiles = Child("Tiles", nextBox.transform);
             Stretch((RectTransform)nextTiles.transform, 10, 10, 10, 10);
             nextPreview = nextBox.AddComponent<NextPiecePreview>();
@@ -159,7 +212,7 @@ namespace WordDrop.EditorTools
 
             const float pauseSize = 110f;
             GameObject pause = ButtonFace("PauseButton", root.transform, Secondary, pauseSize);
-            Place(pause, new Vector2(1, 1), new Vector2(-80, -110), new Vector2(pauseSize, pauseSize));
+            Place(pause, new Vector2(1, 1), new Vector2(-85, -70), new Vector2(pauseSize, pauseSize));
             Button pauseButton = MakeClickable(pause);
             foreach (float x in new[] { -14f, 14f })
             {
@@ -184,28 +237,35 @@ namespace WordDrop.EditorTools
 
         private static WordFoundOverlay BuildClearBanner(Transform parent)
         {
-            GameObject root = RoundedPanel("ClearBanner", parent, BannerBackground, 1f);
-            // Over the top of the board, which is usually empty, so the cleared letters stay visible.
-            Place(root, new Vector2(0.5f, 1f), new Vector2(0, -560), new Vector2(980, 500));
+            GameObject root = Child("ClearBanner", parent);
+            // Over the middle of the board: below the rows where the next piece
+            // spawns, and above the bottom rows where most words form.
+            const float width = 700f;
+            const float height = 380f;
+            Place(root, new Vector2(0.5f, 1f), new Vector2(0, -720), new Vector2(width, height));
             var group = root.AddComponent<CanvasGroup>();
             group.alpha = 0f; // Hidden until something clears.
             group.blocksRaycasts = false;
-            VerticalStack(root, padding: 40, spacing: 10);
 
-            TMP_Text title = Label(root.transform, "Title", Strings.WordFound, 60, Yellow, FontStyles.Bold);
-            Sized(title, 80);
-            TMP_Text words = Label(root.transform, "Words", "SOL", 96, WordGreen, FontStyles.Bold);
+            SoftShadow(root.transform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(width, height), alpha: 0.7f);
+            GameObject card = CardPanel("Card", root.transform, BannerBackground);
+            Stretch((RectTransform)card.transform);
+            VerticalStack(card, padding: 26, spacing: 4);
+
+            TMP_Text title = Label(card.transform, "Title", Strings.WordFound, 46, Yellow, FontStyles.Bold);
+            Sized(title, 60);
+            TMP_Text words = Label(card.transform, "Words", "SOL", 88, WordGreen, FontStyles.Bold);
             words.enableAutoSizing = true;
             words.fontSizeMin = 36;
-            words.fontSizeMax = 96;
-            Sized(words, 140);
-            TMP_Text points = Label(root.transform, "Points", "+90", 72, Yellow, FontStyles.Bold);
-            Sized(points, 100);
-            TMP_Text definition = Label(root.transform, "Definition", "", 30, TextWhite, FontStyles.Italic);
+            words.fontSizeMax = 88;
+            Sized(words, 110);
+            TMP_Text points = Label(card.transform, "Points", "+90", 60, Yellow, FontStyles.Bold);
+            Sized(points, 72);
+            TMP_Text definition = Label(card.transform, "Definition", "", 30, TextWhite, FontStyles.Italic);
             definition.enableAutoSizing = true;
             definition.fontSizeMin = 20;
             definition.fontSizeMax = 30;
-            Sized(definition, 80);
+            Sized(definition, 76);
 
             var overlay = root.AddComponent<WordFoundOverlay>();
             Wire(overlay, "definitionLabel", definition);
@@ -377,38 +437,37 @@ namespace WordDrop.EditorTools
             return panel;
         }
 
-        /// <summary>Bottom bar (from the mockup): Bomb, Shuffle and Star, each with a count badge.</summary>
+        /// <summary>Bottom bar (from the mockup): Bomb, Shuffle and Star as 3D buttons, each with a count badge.</summary>
         private static BoosterBar BuildBoosterBar(Transform parent, GameController controller)
         {
             GameObject root = Child("BoosterBar", parent);
-            Place(root, new Vector2(0.5f, 0f), new Vector2(0, 95), new Vector2(620, 150));
+            Place(root, new Vector2(0.5f, 0f), new Vector2(0, 98), new Vector2(620, 170));
             var group = root.AddComponent<CanvasGroup>();
 
+            const float size = 140f;
+            float lip = ButtonLipHeight(size);
             string[] icons = { BombIconPath, ShuffleIconPath, StarSpritePath };
             var buttons = new Button[3];
             var counts = new TMP_Text[3];
             for (int i = 0; i < 3; i++)
             {
-                GameObject circle = RoundedPanel($"Booster{i}", root.transform, Secondary, 0.75f);
-                Place(circle, new Vector2(0.5f, 0.5f), new Vector2((i - 1) * 200, 0), new Vector2(128, 128));
-                var shadow = circle.AddComponent<Shadow>();
-                shadow.effectColor = new Color(0, 0, 0, 0.35f);
-                shadow.effectDistance = new Vector2(0, -6);
-                buttons[i] = MakeClickable(circle);
+                GameObject face = ButtonFace($"Booster{i}", root.transform, Secondary, size);
+                Place(face, new Vector2(0.5f, 0.5f), new Vector2((i - 1) * 190, 0), new Vector2(150, size));
+                buttons[i] = MakeClickable(face);
 
-                GameObject icon = Child("Icon", circle.transform, typeof(Image));
-                Stretch((RectTransform)icon.transform, 26, 26, 26, 26);
+                GameObject icon = Child("Icon", face.transform, typeof(Image));
+                Stretch((RectTransform)icon.transform, 32, 24 + lip, 32, 24);
                 var iconImage = icon.GetComponent<Image>();
                 iconImage.sprite = LoadSprite(icons[i]);
                 iconImage.preserveAspect = true;
                 iconImage.raycastTarget = false;
                 iconImage.color = i == 2 ? Yellow : TextWhite;
 
-                GameObject badge = RoundedPanel("Count", circle.transform, Green, 0.9f);
-                Place(badge, new Vector2(1, 0), new Vector2(-10, 12), new Vector2(54, 54));
-                badge.GetComponent<Image>().raycastTarget = false;
-                counts[i] = Label(badge.transform, "Label", "3", 30, TextWhite, FontStyles.Bold);
-                Stretch(counts[i].rectTransform);
+                // Count badge on the top-right corner, a small glossy tile.
+                GameObject badge = TileFace("Count", face.transform, Green);
+                Place(badge, new Vector2(1, 1), new Vector2(-4, -2), new Vector2(60, 60));
+                counts[i] = Label(badge.transform, "Label", "3", 32, TextWhite, FontStyles.Bold);
+                TileLetter(counts[i]);
             }
 
             OnClick(buttons[0], controller.UseBomb);
@@ -470,6 +529,18 @@ namespace WordDrop.EditorTools
             VerticalStack(card, padding: 60, spacing: 30);
             AddPopIn(root, card);
             return root;
+        }
+
+        /// <summary>A recessed area, darker under its top edge (the board, the next-piece box).</summary>
+        private static GameObject Well(string name, Transform parent)
+        {
+            GameObject go = Child(name, parent, typeof(Image));
+            var image = go.GetComponent<Image>();
+            image.sprite = well;
+            image.type = Image.Type.Sliced;
+            image.color = WellColor;
+            image.raycastTarget = false;
+            return go;
         }
 
         private static TMP_Text StatRow(Transform parent, string name, string title, Color valueColor)

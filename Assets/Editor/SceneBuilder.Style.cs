@@ -28,6 +28,7 @@ namespace WordDrop.EditorTools
         private const string CardSpritePath = UiArtFolder + "/card.png";
         private const string SoftShadowSpritePath = UiArtFolder + "/soft_shadow.png";
         private const string GlowSpritePath = UiArtFolder + "/glow.png";
+        private const string WellSpritePath = UiArtFolder + "/well.png";
 
         // Baked into the font atlas so common text never waits for a glyph at runtime.
         private const string FontCharacters =
@@ -47,6 +48,7 @@ namespace WordDrop.EditorTools
         private static Sprite cardSprite;
         private static Sprite softShadow;
         private static Sprite glow;
+        private static Sprite well;
 
         private static void LoadStyle()
         {
@@ -60,6 +62,7 @@ namespace WordDrop.EditorTools
             cardSprite = LoadSprite(CardSpritePath);
             softShadow = LoadSprite(SoftShadowSpritePath);
             glow = LoadSprite(GlowSpritePath);
+            well = LoadSprite(WellSpritePath);
         }
 
         /// <summary>
@@ -201,6 +204,23 @@ namespace WordDrop.EditorTools
                 float d = Vector2.Distance(new Vector2(x, y), new Vector2(g / 2f, g / 2f)) / (g / 2f);
                 float a = Mathf.Clamp01(1f - d);
                 return (1f, a * a);
+            });
+
+            // Well: a recessed area (the board, the next-piece box), shaded darker
+            // under its top edge as if the rim casts a shadow into it.
+            const int w = 128;
+            const float wellRadius = 40f;
+            WriteShadedSprite(w, w, WellSpritePath, new Vector4(48, 48, 48, 48), (x, y) =>
+            {
+                float distance = RoundedRectDistance(x, y, 0, 0, w, w, wellRadius);
+                float shadow = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(w, w - 22f, y));
+                float shade = Mathf.Lerp(0.5f, 0.82f, shadow);
+                if (distance > -3f)
+                {
+                    shade = 1.0f; // Thin light edge where the well meets the frame.
+                }
+
+                return (shade, Coverage(distance));
             });
 
             CreateBackgroundSprite();

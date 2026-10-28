@@ -441,11 +441,19 @@ namespace WordDrop.EditorTools
             return rect;
         }
 
-        /// <param name="top">True to show it under the top bar (in the game, where the bottom is busy).</param>
+        /// <param name="top">True to show it over the whole top bar (in the game, where the board and boosters are busy).</param>
         private static Toast BuildToast(Transform parent, bool top = false)
         {
             GameObject root = CardPanel("Toast", parent, ToastBackground);
-            Place(root, new Vector2(0.5f, top ? 1f : 0f), new Vector2(0, top ? -320 : 230), new Vector2(940, 120));
+            if (top)
+            {
+                Place(root, new Vector2(0.5f, 1f), new Vector2(0, -110), new Vector2(1020, 200));
+            }
+            else
+            {
+                Place(root, new Vector2(0.5f, 0f), new Vector2(0, 230), new Vector2(940, 120));
+            }
+
             var group = root.AddComponent<CanvasGroup>();
             group.alpha = 0f;
             group.blocksRaycasts = false;
