@@ -13,7 +13,13 @@ namespace WordDrop.Gameplay.View
         [SerializeField] private TMP_Text pointsLabel;
         [SerializeField] private TMP_Text definitionLabel;
 
+        [Tooltip("Spring that makes the banner overshoot as it pops in.")]
+        [SerializeField] private float stiffness = 320f;
+        [SerializeField] private float damping = 16f;
+
         private float targetAlpha;
+        private float scale = 1f;
+        private float scaleVelocity;
 
         private void Awake()
         {
@@ -30,7 +36,8 @@ namespace WordDrop.Gameplay.View
             pointsLabel.text = "+" + Strings.FormatNumber(points);
 
             targetAlpha = 1f;
-            transform.localScale = Vector3.one * 0.7f;
+            scale = 0.6f;
+            scaleVelocity = 0f;
         }
 
         public void Hide() => targetAlpha = 0f;
@@ -41,7 +48,11 @@ namespace WordDrop.Gameplay.View
             float sharpness = targetAlpha > 0f ? 14f : 30f;
             float blend = 1f - Mathf.Exp(-sharpness * Time.unscaledDeltaTime);
             group.alpha = Mathf.Lerp(group.alpha, targetAlpha, blend);
-            transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, blend);
+
+            float dt = Mathf.Min(Time.unscaledDeltaTime, 1f / 30f);
+            scaleVelocity += ((1f - scale) * stiffness - scaleVelocity * damping) * dt;
+            scale += scaleVelocity * dt;
+            transform.localScale = Vector3.one * scale;
         }
     }
 }

@@ -43,6 +43,9 @@ namespace WordDrop.Gameplay.View
         private Vector2 target;
         private float targetScale = 1f;
 
+        /// <summary>The tile's own color (hint, neutral or booster), even while highlighted.</summary>
+        public Color BaseColor { get; private set; }
+
         public static Color ColorForHint(int hint) =>
             hint <= 0 ? NeutralColor : HintColors[(hint - 1) % HintColors.Length];
 
@@ -56,7 +59,8 @@ namespace WordDrop.Gameplay.View
             letterLabel.text = letter.ToString();
             icon.gameObject.SetActive(bomb || wildcard);
             icon.sprite = bomb ? bombSprite : starSprite;
-            background.color = bomb ? BombColor : wildcard ? WildcardColor : ColorForHint(hint);
+            BaseColor = bomb ? BombColor : wildcard ? WildcardColor : ColorForHint(hint);
+            background.color = BaseColor;
 
             SetSize(size);
             Snap(position);
@@ -92,6 +96,9 @@ namespace WordDrop.Gameplay.View
             background.color = HighlightColor;
             StartCoroutine(Pulse());
         }
+
+        /// <summary>A quick squash as the tile lands; it springs back by itself.</summary>
+        public void Land() => transform.localScale = new Vector3(1.12f, 0.84f, 1f);
 
         /// <summary>Shrinks the tile away and destroys it.</summary>
         public void Vanish()

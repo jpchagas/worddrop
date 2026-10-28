@@ -52,14 +52,19 @@ namespace WordDrop.EditorTools
             Stretch((RectTransform)playArea.transform, 30, 200, 30, 250);
             playArea.GetComponent<Image>().color = Color.clear;
 
+            var shaker = playArea.AddComponent<Shaker>();
+
             GameObject board = BuildBoardFrame(playArea.transform, levels[0].BoardWidth, levels[0].BoardHeight,
                 out GameObject slots, out GameObject tiles);
+            BuildBoardEffects(board.transform, out UiParticles particles, out FloatingText floatingText);
 
             var boardView = board.AddComponent<BoardView>();
             Wire(boardView, "tilePrefab", tilePrefab);
             Wire(boardView, "slotsRoot", slots.transform);
             Wire(boardView, "tilesRoot", tiles.transform);
             Wire(boardView, "slotSprite", rounded);
+            Wire(boardView, "particles", particles);
+            Wire(boardView, "floatingText", floatingText);
 
             var boardInput = playArea.AddComponent<BoardInput>();
             Wire(boardInput, "boardView", boardView);
@@ -95,6 +100,8 @@ namespace WordDrop.EditorTools
             Wire(controller, "levelCompletePanel", levelComplete);
             Wire(controller, "gameOverPanel", gameOver);
             Wire(controller, "sounds", sounds);
+            Wire(controller, "boardShaker", shaker);
+            Wire(levelComplete, "sounds", sounds);
 
             Save(ui.Scene, SceneNames.Game);
         }
@@ -128,6 +135,28 @@ namespace WordDrop.EditorTools
             tiles = Child("Tiles", board.transform);
             Stretch((RectTransform)tiles.transform, BoardPadding, BoardPadding, BoardPadding, BoardPadding);
             return board;
+        }
+
+        /// <summary>
+        /// Layers over the board's tiles, laid out like them so they share
+        /// coordinates: tile-burst particles, then floating points on top.
+        /// </summary>
+        private static void BuildBoardEffects(Transform board, out UiParticles particles, out FloatingText floatingText)
+        {
+            GameObject particleLayer = Child("Particles", board);
+            Stretch((RectTransform)particleLayer.transform, BoardPadding, BoardPadding, BoardPadding, BoardPadding);
+            particles = particleLayer.AddComponent<UiParticles>();
+            Wire(particles, "chunkSprite", tileSprite);
+            Wire(particles, "sparkSprite", glow);
+
+            GameObject textLayer = Child("FloatingText", board);
+            Stretch((RectTransform)textLayer.transform, BoardPadding, BoardPadding, BoardPadding, BoardPadding);
+            TMP_Text template = Label(textLayer.transform, "Template", "+90", 64, Yellow, FontStyles.Bold);
+            template.textWrappingMode = TextWrappingModes.NoWrap;
+            Place(template.gameObject, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(400, 100));
+            template.gameObject.SetActive(false);
+            floatingText = textLayer.AddComponent<FloatingText>();
+            Wire(floatingText, "template", template);
         }
 
         /// <summary>

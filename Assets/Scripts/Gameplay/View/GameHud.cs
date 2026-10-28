@@ -24,10 +24,27 @@ namespace WordDrop.Gameplay.View
 
         private float shownProgress;
         private float targetProgress;
+        private float shownScore;
+        private int targetScore;
+        private int earnedStars;
 
         public void SetTitle(string title) => titleLabel.text = title;
 
-        public void SetScore(int score) => scoreLabel.text = Strings.FormatNumber(score);
+        /// <summary>The score counts up to a higher value with a punch; a lower one (a restart) shows at once.</summary>
+        public void SetScore(int score)
+        {
+            if (score > targetScore)
+            {
+                Punch(scoreLabel.transform, 1.3f);
+            }
+            else if (score < targetScore)
+            {
+                shownScore = score;
+                scoreLabel.text = Strings.FormatNumber(score);
+            }
+
+            targetScore = score;
+        }
 
         public void SetCounter(string text) => counterLabel.text = text;
 
@@ -46,13 +63,35 @@ namespace WordDrop.Gameplay.View
             for (int i = 0; i < stars.Length; i++)
             {
                 stars[i].color = i < earned ? starOn : starOff;
+                if (i >= earnedStars && i < earned)
+                {
+                    Punch(stars[i].transform, 1.8f);
+                }
             }
+
+            earnedStars = earned;
         }
+
+        private static void Punch(Transform target, float scale) => target.localScale = Vector3.one * scale;
 
         private void Update()
         {
             shownProgress = Mathf.MoveTowards(shownProgress, targetProgress, Time.unscaledDeltaTime);
             progressFill.anchorMax = new Vector2(shownProgress, 1f);
+
+            float blend = 1f - Mathf.Exp(-12f * Time.unscaledDeltaTime);
+            if (Mathf.RoundToInt(shownScore) != targetScore)
+            {
+                // Eases in, then always moves at least a little so it lands on the exact value.
+                shownScore = Mathf.MoveTowards(Mathf.Lerp(shownScore, targetScore, blend), targetScore, 60f * Time.unscaledDeltaTime);
+                scoreLabel.text = Strings.FormatNumber(Mathf.RoundToInt(shownScore));
+            }
+
+            scoreLabel.transform.localScale = Vector3.Lerp(scoreLabel.transform.localScale, Vector3.one, blend);
+            foreach (Image star in stars)
+            {
+                star.transform.localScale = Vector3.Lerp(star.transform.localScale, Vector3.one, blend);
+            }
         }
     }
 }

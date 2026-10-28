@@ -49,6 +49,9 @@ namespace WordDrop.Gameplay
         [Tooltip("Labels of the buttons that leave the game; they say 'Mapa de níveis' in the campaign.")]
         [SerializeField] private TMP_Text[] exitLabels;
         [SerializeField] private SoundEffects sounds;
+        [Tooltip("Shakes the board on clears, bombs and hard drops.")]
+        [SerializeField] private Shaker boardShaker;
+        [SerializeField] private Color pointsColor = new Color32(0xFF, 0xC8, 0x3A, 0xFF);
 
         [Header("Timing")]
         [SerializeField] private float softDropMultiplier = 12f;
@@ -295,6 +298,7 @@ namespace WordDrop.Gameplay
             {
             }
 
+            ShakeBoard(7f, 0.15f);
             Lock();
         }
 
@@ -448,6 +452,9 @@ namespace WordDrop.Gameplay
             RefreshBoosters();
         }
 
+        /// <param name="amount">Largest offset for a 70-unit cell; scaled to the board's real size.</param>
+        private void ShakeBoard(float amount, float seconds = 0.3f) => boardShaker.Shake(amount * boardView.CellSize / 70f, seconds);
+
         private void RefreshBoosters() => boosterBar.Refresh(BoostersAllowed && PieceActive && !boosterUsedOnPiece);
 
         // ---------------------------------------------------------------- Resolution
@@ -491,6 +498,7 @@ namespace WordDrop.Gameplay
 
                     string definition = words.Count > 0 ? dictionary.Definition(words[0]) : null;
                     boardView.Highlight(pass.ClearedCells);
+                    boardView.FloatText(pass.ClearedCells, "+" + Strings.FormatNumber(pass.Points), pointsColor, 1f + 0.25f * pass.ChainIndex);
                     clearBanner.Show(BannerTitle(pass), BannerBody(words, pass.Rows.Count), pass.Points, definition);
                     sounds.Play(pass.ChainIndex > 0 ? Sfx.Combo : pass.Words.Count > 0 ? Sfx.Word : Sfx.Row);
                     Haptics.Pulse();
@@ -499,6 +507,7 @@ namespace WordDrop.Gameplay
 
                     clearBanner.Hide();
                     boardView.Remove(pass.ClearedCells);
+                    ShakeBoard(8f + 6f * pass.Rows.Count + 6f * pass.ChainIndex);
                 }
 
                 boardView.ApplyMoves(pass.Moves);
@@ -571,6 +580,7 @@ namespace WordDrop.Gameplay
 
             board.Clear(cleared);
             boardView.Remove(cleared);
+            ShakeBoard(24f, 0.4f);
             // Independent gravity is applied by the resolver; the other mode drops only what was above.
             if (level.Gravity == GravityMode.AboveClearedOnly)
             {

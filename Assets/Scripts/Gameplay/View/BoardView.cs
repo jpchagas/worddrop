@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using WordDrop.UI;
 
 namespace WordDrop.Gameplay.View
 {
@@ -16,6 +17,9 @@ namespace WordDrop.Gameplay.View
         [SerializeField] private RectTransform slotsRoot;
         [SerializeField] private RectTransform tilesRoot;
         [SerializeField] private Sprite slotSprite;
+        [Tooltip("Effects layers over the tiles, laid out like tilesRoot so they share its coordinates.")]
+        [SerializeField] private UiParticles particles;
+        [SerializeField] private FloatingText floatingText;
         [Tooltip("Empty cells, even columns. Odd columns use the other shade, so columns read as lanes.")]
         [SerializeField] private Color slotColor = new Color32(0x1E, 0x34, 0x68, 0xB0);
         [SerializeField] private Color slotColorAlt = new Color32(0x1E, 0x34, 0x68, 0x60);
@@ -137,6 +141,7 @@ namespace WordDrop.Gameplay.View
             {
                 Vector2Int cell = piece.CellOf(i);
                 tiles[cell.x, cell.y] = pieceTiles[i];
+                pieceTiles[i].Land();
             }
 
             pieceTiles.Clear();
@@ -158,10 +163,23 @@ namespace WordDrop.Gameplay.View
             {
                 if (tiles[cell.x, cell.y] != null)
                 {
+                    particles.Burst(CellCenter(cell), tiles[cell.x, cell.y].BaseColor, CellSize / 70f);
                     tiles[cell.x, cell.y].Vanish();
                     tiles[cell.x, cell.y] = null;
                 }
             }
+        }
+
+        /// <summary>Floats <paramref name="text"/> up from the middle of <paramref name="cells"/>, e.g. the points they scored.</summary>
+        public void FloatText(IReadOnlyCollection<Vector2Int> cells, string text, Color color, float scale = 1f)
+        {
+            Vector2 sum = Vector2.zero;
+            foreach (Vector2Int cell in cells)
+            {
+                sum += CellCenter(cell);
+            }
+
+            floatingText.Show(text, sum / Mathf.Max(1, cells.Count), color, scale * CellSize / 70f);
         }
 
         /// <summary>Moves tiles as the board did. Moves must come in the order the board made them.</summary>

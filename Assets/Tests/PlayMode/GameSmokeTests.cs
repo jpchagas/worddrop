@@ -340,6 +340,7 @@ namespace WordDrop.Tests
             Time.timeScale = 4f;
             int dropped = 0;
             bool capturedClear = false;
+            bool capturedBurst = false;
             float timeout = Time.realtimeSinceStartup + 150f;
 
             while (!controller.HasEnded && Time.realtimeSinceStartup < timeout)
@@ -348,6 +349,12 @@ namespace WordDrop.Tests
                 {
                     capturedClear = true;
                     Capture(screenshotPrefix + "_Clear");
+                }
+                else if (capturedClear && !capturedBurst && banner.alpha < 0.7f)
+                {
+                    // The banner leaves as the cleared tiles burst.
+                    capturedBurst = true;
+                    Capture(screenshotPrefix + "_Burst");
                 }
 
                 if (controller.IsFalling)
@@ -380,7 +387,8 @@ namespace WordDrop.Tests
 
             Time.timeScale = 1f;
             Assert.IsTrue(controller.HasEnded, "The run did not finish in time.");
-            yield return WaitForPopIn();
+            // The panel pops in, then a level's stars land one by one.
+            yield return new WaitForSecondsRealtime(1.8f);
             Capture(screenshotPrefix + "_End");
             Debug.Log($"[Word Drop] {screenshotPrefix}: dropped {dropped} pieces, ended in {controller.CurrentState} with {controller.Score} points.");
         }
